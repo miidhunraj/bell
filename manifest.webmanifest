@@ -1,7 +1,7 @@
 {
   "name": "Call Bell",
   "short_name": "Call Bell",
-  "description": "A thoughtful one-tap way to call me.",
+  "description": "A warm, one-tap way to let me know you need a hand.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
@@ -10,8 +10,8 @@
     "standalone",
     "minimal-ui"
   ],
-  "background_color": "#f5f2e9",
-  "theme_color": "#173d30",
+  "background_color": "#f4f0e6",
+  "theme_color": "#102f25",
   "orientation": "any",
   "icons": [
     {
