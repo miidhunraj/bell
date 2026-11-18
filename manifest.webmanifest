@@ -1,12 +1,12 @@
 {
   "name": "Counter Bell",
-  "short_name": "Bell",
-  "description": "A simple counter bell that alerts your phone when a customer needs you.",
+  "short_name": "Counter Bell",
+  "description": "A thoughtful one-tap way to let your team know a guest is waiting.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#111310",
-  "theme_color": "#111310",
+  "background_color": "#f5f1e8",
+  "theme_color": "#f5f1e8",
   "orientation": "portrait",
   "icons": [
     {
@@ -20,12 +20,6 @@
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
-    },
-    {
-      "src": "icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "maskable"
     }
   ]
 }
