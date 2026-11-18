@@ -1,5 +1,5 @@
 const $ = id => document.getElementById(id);
-const STORE = "counterbell.v2";
+const STORE = "callbell.v2";
 const state = {
   code:"", role:null, stream:null, audio:null, alarmTimer:null, vibrationTimer:null,
   cooldownTimer:null, remaining:30, busy:false, alarmActive:false, lastMessage:""
@@ -13,11 +13,11 @@ function makeCode(){
 }
 function normaliseCode(value){
   let v=value.trim().toLowerCase().replace(/[^a-z0-9_-]/g,"");
-  if(v.startsWith("counter-bell-")) v=v.slice("counter-bell-".length);
+  if(v.startsWith("call-bell-")) v=v.slice("call-bell-".length);
   if(v.startsWith("cb-")) return v;
   return v;
 }
-function topic(){ return "counter-bell-" + state.code; }
+function topic(){ return "call-bell-" + state.code; }
 function save(){ localStorage.setItem(STORE,JSON.stringify({code:state.code,role:state.role})); }
 function load(){
   try{const v=JSON.parse(localStorage.getItem(STORE)||"{}");state.code=v.code||"";state.role=v.role||null;}catch{}
@@ -65,9 +65,9 @@ function startAlarm(message="A guest has called from the counter."){
   state.alarmActive=true;
   $("alarm-time").textContent=message;
   $("alarm-overlay").hidden=false;
-  playChime();vibrate([500,220,500,650]);
-  state.alarmTimer=setInterval(()=>{if(state.alarmActive)playChime();},2200);
-  state.vibrationTimer=setInterval(()=>{if(state.alarmActive)vibrate([500,220,500,650]);},2600);
+  playChime();vibrate([700,250,700,250,1000]);
+  state.alarmTimer=setInterval(()=>{if(state.alarmActive)playChime();},2400);
+  state.vibrationTimer=setInterval(()=>{if(state.alarmActive)vibrate([700,250,700,250,1000]);},2800);
 }
 function setReceiverStatus(text,live=false){
   $("receiver-status").dataset.state=live?"live":"";
@@ -97,7 +97,7 @@ function connectStream(){
 }
 async function sendNtfy(message,isTest=false){
   const query=new URLSearchParams({
-    title:isTest?"Counter Bell test":"A guest is waiting",
+    title:isTest?"Call Bell test":"A guest is waiting",
     priority:"urgent",
     tags:"bell,rotating_light",
     click:location.href
@@ -139,7 +139,7 @@ function joinPhone(){
   if(!code || code.length<8){toast("Enter the shop code shown on your counter tablet.");$("shop-code").focus();return;}
   state.code=code;state.role="phone";save();
   $("phone-topic").textContent=topic();
-  $("open-ntfy").href="https://ntfy.sh/"+encodeURIComponent(topic());
+  $("open-ntfy").textContent="Open in ntfy app";
   $("connect-result").hidden=false;
 }
 function showReceiver(){
@@ -150,7 +150,7 @@ function showReceiver(){
 }
 async function testPush(){
   $("push-state").textContent="Sending test…";
-  const ok=await sendNtfy("Counter Bell test alert. If you hear this, phone notifications are reaching your device.",true);
+  const ok=await sendNtfy("Call Bell test alert. If you hear this, phone notifications are reaching your device.",true);
   $("push-state").textContent=ok?"Test sent — check ntfy notifications":"Could not send — check internet and topic";
   toast(ok?"Test sent. Check the ntfy app.":"Test failed. Check your connection.");
 }
@@ -174,6 +174,8 @@ function startCooldown(){
 }
 async function guestCall(){
   if(state.busy||state.cooldownTimer)return;
+  // One short haptic acknowledgement on the customer tablet at the instant of tap.
+  try{if(navigator.vibrate)navigator.vibrate(70);}catch{}
   state.busy=true;$("guest-button").disabled=true;
   $("guest-label").textContent="Sending your message…";
   const ok=await sendNtfy("A guest is waiting at the counter. Please assist them.",false);
@@ -190,17 +192,68 @@ async function guestCall(){
 async function testLocalAlarm(){
   // This button click is the required user gesture to unlock mobile audio.
   const ok=playChime();
-  vibrate([350,180,350]);
+  vibrate([500,180,500,180,700]);
   $("alarm-state").textContent=ok?("Sound "+(navigator.vibrate?"and vibration":"; vibration not supported here")):"Audio is unavailable in this browser";
   toast(navigator.vibrate?"Sound and vibration test played":"Sound test played; this browser does not expose vibration");
 }
 function openSettings(){
   $("settings-code").textContent=state.code||"Not generated yet";
+  if(state.code) $("shop-qr").src="https://api.qrserver.com/v1/create-qr-code/?size=260x260&data="+encodeURIComponent(state.code);
+  $("fullscreen-button").innerHTML=document.fullscreenElement?'Exit fullscreen <span>⛶</span>':'Enter fullscreen <span>⛶</span>';
   $("settings-modal").hidden=false;
 }
 function closeSettings(){$("settings-modal").hidden=true;}
+
+function closeScanner(){
+  if(state.scanLoop)cancelAnimationFrame(state.scanLoop);
+  state.scanLoop=null;
+  if(state.scannerStream){state.scannerStream.getTracks().forEach(t=>t.stop());state.scannerStream=null;}
+  $("scanner-modal").hidden=true;
+}
+async function startScanner(){
+  $("scanner-modal").hidden=false;
+  $("scanner-status").textContent="Requesting camera permission…";
+  if(!navigator.mediaDevices?.getUserMedia){
+    $("scanner-status").textContent="Camera scanning requires HTTPS and a supported browser.";
+    return;
+  }
+  if(!("BarcodeDetector" in window)){
+    $("scanner-status").textContent="QR scanning is not supported by this browser. Use the manual code field.";
+    return;
+  }
+  try{
+    state.scannerStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:"environment"}},audio:false});
+    $("scanner-video").srcObject=state.scannerStream;
+    await $("scanner-video").play();
+    state.barcodeDetector=new BarcodeDetector({formats:["qr_code"]});
+    $("scanner-status").textContent="Point the camera at the tablet’s QR code…";
+    const scan=async()=>{
+      if(!state.scannerStream||$("scanner-modal").hidden)return;
+      try{
+        const codes=await state.barcodeDetector.detect($("scanner-video"));
+        if(codes.length){
+          const raw=(codes[0].rawValue||"").trim();
+          const decoded=normaliseCode(raw);
+          if(decoded.length>=8){
+            $("shop-code").value=decoded;
+            try{await navigator.clipboard.writeText(decoded);}catch{}
+            closeScanner();
+            toast("Shop code scanned and filled in");
+            joinPhone();
+            return;
+          }
+        }
+      }catch{}
+      state.scanLoop=requestAnimationFrame(scan);
+    };
+    scan();
+  }catch(err){
+    $("scanner-status").textContent=err.name==="NotAllowedError"?"Camera permission was denied. Allow camera access and try again.":"Could not start the camera. You can paste the code manually.";
+  }
+}
+
 function resetDevice(){
-  if(!confirm("Reset this device's Counter Bell setup?"))return;
+  if(!confirm("Reset this device's Call Bell setup?"))return;
   stopAlarm();if(state.stream)state.stream.close();
   if(state.cooldownTimer)clearInterval(state.cooldownTimer);
   localStorage.removeItem(STORE);state.code="";state.role=null;screen("setup");closeSettings();
@@ -209,7 +262,28 @@ $("setup-counter").addEventListener("click",showCounter);
 $("setup-phone").addEventListener("click",showPhoneConnect);
 $("back-setup").addEventListener("click",()=>screen("setup"));
 $("join-shop").addEventListener("click",joinPhone);
+$("scan-code").addEventListener("click",startScanner);
+$("close-scanner").addEventListener("click",closeScanner);
+$("scanner-manual").addEventListener("click",closeScanner);
+$("scanner-modal").addEventListener("click",e=>{if(e.target===$("scanner-modal"))closeScanner();});
+document.addEventListener("fullscreenchange",()=>{
+  if(!$("settings-modal").hidden)$("fullscreen-button").innerHTML=document.fullscreenElement?'Exit fullscreen <span>⛶</span>':'Enter fullscreen <span>⛶</span>';
+});
+window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();state.installPrompt=e;});
+$("install-app").addEventListener("click",async()=>{
+  if(state.installPrompt){
+    state.installPrompt.prompt();
+    await state.installPrompt.userChoice;
+    state.installPrompt=null;
+  }else{
+    toast(/iPhone|iPad|iPod/i.test(navigator.userAgent)?"In Safari: Share → Add to Home Screen":"Open browser menu → Install app / Add to Home Screen");
+  }
+});
 $("copy-phone-topic").addEventListener("click",()=>copy(topic(),"ntfy topic"));
+$("open-ntfy").addEventListener("click",()=>{
+  // Use ntfy's app URI scheme so Android/iOS can hand off to the installed app.
+  window.location.href="ntfy://ntfy.sh/"+encodeURIComponent(topic());
+});
 $("go-receiver").addEventListener("click",showReceiver);
 $("test-alarm").addEventListener("click",testLocalAlarm);
 $("test-push").addEventListener("click",testPush);
@@ -220,10 +294,13 @@ $("receiver-settings").addEventListener("click",openSettings);
 $("close-modal").addEventListener("click",closeSettings);
 $("settings-modal").addEventListener("click",e=>{if(e.target===$("settings-modal"))closeSettings();});
 $("copy-settings-code").addEventListener("click",()=>copy(state.code,"Shop code"));
-$("fullscreen-button").addEventListener("click",()=>{
-  const p=document.documentElement.requestFullscreen?.();
-  if(p&&p.then)p.then(()=>toast("Fullscreen enabled")).catch(()=>toast("Use your browser menu to enter fullscreen."));
-  else toast("Use your browser menu to enter fullscreen.");
+$("fullscreen-button").addEventListener("click",async()=>{
+  try{
+    if(document.fullscreenElement){await document.exitFullscreen();toast("Exited fullscreen");}
+    else if(document.documentElement.requestFullscreen){await document.documentElement.requestFullscreen();toast("Fullscreen enabled");}
+    else toast("Use your browser menu to enter fullscreen.");
+  }catch{toast("Fullscreen is controlled by your browser on this device.");}
+  $("fullscreen-button").innerHTML=document.fullscreenElement?'Exit fullscreen <span>⛶</span>':'Enter fullscreen <span>⛶</span>';
 });
 $("settings-test").addEventListener("click",testPush);
 $("reset-device").addEventListener("click",resetDevice);
