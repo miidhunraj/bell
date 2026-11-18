@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0c0d0f">
+<meta name="description" content="Counter Bell — press once, the phone rings.">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Bell">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" href="icon-192.png" sizes="192x192">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap">
+<link rel="stylesheet" href="styles.css">
+<title>Counter Bell</title>
+</head>
+<body>
+
+<div class="shell">
+
+  <!-- ============ ONBOARDING ============ -->
+  <section class="screen" id="s-onboard" aria-labelledby="onboard-title">
+    <header class="masthead">
+      <div class="mark" aria-hidden="true">
+        <svg viewBox="0 0 32 32"><path d="M16 5a8 8 0 0 0-8 8v5l-2 3h20l-2-3v-5a8 8 0 0 0-8-8Z"/><path d="M13 24a3 3 0 0 0 6 0"/></svg>
+      </div>
+      <div>
+        <p class="eyebrow">Counter Bell</p>
+        <h1 id="onboard-title">Two devices, one tap.</h1>
+      </div>
+    </header>
+
+    <p class="lede">The tablet sits at the counter. A customer presses it. Your phone rings. That is the whole product.</p>
+
+    <div class="field-group">
+      <label for="code">Channel code</label>
+      <div class="field-row">
+        <input id="code" class="input mono" inputmode="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-describedby="code-hint">
+        <button class="btn btn-quiet" id="reroll" type="button">Reroll</button>
+      </div>
+      <p class="hint" id="code-hint">Treat it as a password. Anyone holding it can ring you.</p>
+    </div>
+
+    <details class="advanced">
+      <summary>Advanced</summary>
+      <div class="field-group">
+        <label for="server">Notification server</label>
+        <input id="server" class="input mono" placeholder="https://ntfy.sh" autocapitalize="off" spellcheck="false">
+        <p class="hint">Leave blank unless you self-host ntfy.</p>
+      </div>
+    </details>
+
+    <div class="roles">
+      <button class="role" id="pick-station" type="button">
+        <span class="role-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+        </span>
+        <span class="role-copy">
+          <strong>This device is the counter</strong>
+          <em>Tablet or spare phone, mounted and plugged in.</em>
+        </span>
+        <span class="role-chev" aria-hidden="true">→</span>
+      </button>
+
+      <button class="role" id="pick-receiver" type="button">
+        <span class="role-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><rect x="7" y="2" width="10" height="20" rx="2.5"/><path d="M11 18.5h2"/></svg>
+        </span>
+        <span class="role-copy">
+          <strong>This device is my phone</strong>
+          <em>Rings, buzzes and escalates until dismissed.</em>
+        </span>
+        <span class="role-chev" aria-hidden="true">→</span>
+      </button>
+    </div>
+  </section>
+
+  <!-- ============ STATION ============ -->
+  <section class="screen" id="s-station" hidden>
+    <header class="bar">
+      <span class="status" id="station-status"><i class="dot"></i><span>Ready</span></span>
+      <span class="chip mono" id="station-code"></span>
+    </header>
+
+    <button class="press" id="press" type="button" aria-label="Call the shopkeeper">
+      <span class="press-rings" aria-hidden="true"></span>
+      <span class="press-label" id="press-label">
+        <span class="press-kicker">Customer service</span>
+        <span class="press-main">Tap to call</span>
+      </span>
+    </button>
+
+    <footer class="foot">
+      <p class="counter">Presses today <b id="press-count">0</b></p>
+      <button class="link" id="station-settings" type="button">Settings</button>
+    </footer>
+  </section>
+
+  <!-- ============ RECEIVER ============ -->
+  <section class="screen" id="s-receiver" hidden>
+    <header class="bar">
+      <span class="status" id="recv-status"><i class="dot"></i><span>Idle</span></span>
+      <span class="chip mono" id="recv-code"></span>
+    </header>
+
+    <div class="card">
+      <h2>Channel</h2>
+      <div class="copyrow">
+        <code class="mono" id="channel-text"></code>
+        <button class="btn btn-quiet btn-xs" id="copy" type="button">Copy</button>
+      </div>
+      <div class="qr-wrap"><img id="qr" alt="Channel QR code" width="200" height="200"></div>
+      <div class="btn-row">
+        <button class="btn btn-primary" id="open-app" type="button">Open in ntfy</button>
+        <button class="btn" id="open-web" type="button">Browser</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>One-time setup</h2>
+      <ol class="steps">
+        <li>Install <b>ntfy</b> from the App Store or Play Store.</li>
+        <li>Subscribe to this channel and allow notifications.</li>
+        <li>Long-press the channel → <b>sound</b> → choose an alarm.</li>
+        <li>iPhone: enable <b>Time-Sensitive</b> so silent mode cannot swallow it.</li>
+      </ol>
+    </div>
+
+    <div class="card">
+      <div class="toggle-row">
+        <div>
+          <h2 class="flush">Escalate</h2>
+          <p class="hint">Re-rings every minute, up to five times, until you dismiss.</p>
+        </div>
+        <label class="switch">
+          <input type="checkbox" id="escalate">
+          <span aria-hidden="true"></span>
+        </label>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="toggle-row">
+        <div>
+          <h2 class="flush">Backup siren</h2>
+          <p class="hint" id="arm-hint">Rings this page too, if it happens to be open.</p>
+        </div>
+        <button class="btn btn-primary btn-xs" id="arm" type="button">Arm</button>
+      </div>
+    </div>
+
+    <button class="btn btn-wide btn-test" id="test" type="button">Send test ring</button>
+
+    <div class="card">
+      <h2>History</h2>
+      <ul class="history" id="history"><li class="empty">No rings yet.</li></ul>
+      <div class="btn-row">
+        <button class="btn btn-quiet btn-xs" id="install" type="button">Install app</button>
+        <button class="btn btn-quiet btn-xs" id="recv-settings" type="button">Settings</button>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<!-- ============ RING ============ -->
+<div class="ring" id="ring" hidden role="alertdialog" aria-live="assertive" aria-labelledby="ring-title">
+  <div class="ring-inner">
+    <div class="ring-bell" aria-hidden="true">
+      <svg viewBox="0 0 32 32"><path d="M16 5a8 8 0 0 0-8 8v5l-2 3h20l-2-3v-5a8 8 0 0 0-8-8Z"/><path d="M13 24a3 3 0 0 0 6 0"/></svg>
+    </div>
+    <h2 id="ring-title">Customer at the counter</h2>
+    <p class="ring-meta" id="ring-meta"></p>
+    <button class="btn-dismiss" id="dismiss" type="button">I'm coming</button>
+  </div>
+</div>
+
+<!-- ============ INSTALL SHEET ============ -->
+<div class="sheet" id="sheet" hidden role="dialog" aria-modal="true" aria-labelledby="sheet-title">
+  <div class="sheet-panel">
+    <h2 id="sheet-title">Install as an app</h2>
+    <div id="sheet-body"></div>
+    <button class="btn btn-wide" id="sheet-close" type="button">Close</button>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/mqtt@5.10.1/dist/mqtt.min.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
