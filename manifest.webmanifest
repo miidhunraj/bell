@@ -1,16 +1,17 @@
 {
-  "name": "Hello Bell \u2014 Counter Calling",
-  "short_name": "Hello Bell",
-  "description": "A full-screen customer calling button for your counter.",
+  "name": "Counter Bell",
+  "short_name": "Bell",
+  "description": "A thoughtful one-tap customer calling system.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
   "display_override": [
     "fullscreen",
-    "standalone"
+    "standalone",
+    "minimal-ui"
   ],
-  "background_color": "#153b2d",
-  "theme_color": "#153b2d",
+  "background_color": "#f5f2e9",
+  "theme_color": "#173d30",
   "orientation": "any",
   "icons": [
     {
