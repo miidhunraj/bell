@@ -1,13 +1,17 @@
 {
-  "name": "Counter Bell",
-  "short_name": "Counter Bell",
-  "description": "A thoughtful one-tap way to let your team know a guest is waiting.",
+  "name": "Hello Bell \u2014 Counter Calling",
+  "short_name": "Hello Bell",
+  "description": "A full-screen customer calling button for your counter.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#f5f1e8",
-  "theme_color": "#f5f1e8",
-  "orientation": "portrait",
+  "display_override": [
+    "fullscreen",
+    "standalone"
+  ],
+  "background_color": "#153b2d",
+  "theme_color": "#153b2d",
+  "orientation": "any",
   "icons": [
     {
       "src": "icon-192.png",
