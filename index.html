@@ -1,164 +1,128 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#f5f1e8">
-  <meta name="description" content="A thoughtful, one-tap way to let your team know a guest is waiting.">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <meta name="apple-mobile-web-app-title" content="Counter Bell">
-  <link rel="manifest" href="manifest.webmanifest">
-  <link rel="icon" href="icon-192.png" sizes="192x192">
-  <link rel="apple-touch-icon" href="apple-touch-icon.png">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,500;6..96,600&family=DM+Sans:wght@400;500;600;700&family=Montserrat:wght@500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css">
-  <title>Counter Bell — A better welcome</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#153b2d">
+<meta name="description" content="A simple, welcoming way to call the team.">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Hello Bell">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="apple-touch-icon" href="./apple-touch-icon.png">
+<link rel="stylesheet" href="./styles.css?v=3">
+<title>Hello Bell</title>
 </head>
 <body>
-  <div class="grain" aria-hidden="true"></div>
-  <div class="ambient ambient-a" aria-hidden="true"></div>
-  <div class="ambient ambient-b" aria-hidden="true"></div>
-
-  <main class="app-shell">
-    <section class="screen onboarding" id="onboarding">
-      <header class="brand-lockup">
-        <div class="brand-symbol" aria-hidden="true"><svg viewBox="0 0 48 48"><path d="M24 7.5c-7 0-11.5 5.1-11.5 12.1v7.1l-4.1 6.1h31.2l-4.1-6.1v-7.1C35.5 12.6 31 7.5 24 7.5Z"/><path d="M19.5 37.2a4.8 4.8 0 0 0 9 0"/></svg></div>
-        <div><div class="brand-name">COUNTER <span>BELL</span></div><div class="brand-caption">A better way to say hello.</div></div>
-        <span class="edition">EST. FOR GOOD SERVICE</span>
-      </header>
-
-      <div class="intro-block">
-        <p class="overline"><span class="overline-line"></span> THE LITTLE THINGS MATTER</p>
-        <h1>Make every<br><em>hello</em> feel easy.</h1>
-        <p class="intro-copy">A simple, thoughtful way for guests to call your team. One tap at the counter, one alert on your phone.</p>
+<div class="app" id="app">
+  <section class="screen setup-screen" id="setup-screen">
+    <header class="topbar">
+      <a class="brand" href="#" aria-label="Hello Bell home"><span class="brand-mark">hb</span><span>hello<span class="brand-light">bell</span></span></a>
+      <span class="top-note">A LITTLE MORE ATTENTION. A LOT MORE CARE.</span>
+    </header>
+    <main class="setup-main">
+      <div class="intro">
+        <p class="eyebrow"><span></span> CUSTOMER CARE, MADE SIMPLE</p>
+        <h1>Good service<br>starts with <i>hello.</i></h1>
+        <p class="intro-text">One tap at the counter lets your team know someone is waiting. No shouting, no searching — just a little signal.</p>
       </div>
-
-      <div class="setup-layout">
-        <div class="setup-main">
-          <div class="section-topline"><span>01 / GET CONNECTED</span><span class="tiny-dot"></span></div>
-          <h2>Two devices.<br><em>One little signal.</em></h2>
-          <p class="section-copy">Choose how you’re setting up this device. Your counter and your phone will share one shop code.</p>
-
-          <div class="connection-card">
-            <div class="connection-icon"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8M12 17v4"/></svg></div>
-            <div class="connection-text"><strong>This is the counter</strong><span>Keep this device at your shop for guests.</span></div>
-            <button class="arrow-button" id="create-counter" type="button" aria-label="Set up this device as the counter">↗</button>
-          </div>
-          <div class="connection-card">
-            <div class="connection-icon phone-icon"><svg viewBox="0 0 24 24"><rect x="7" y="2" width="10" height="20" rx="2.5"/><path d="M11 18.5h2"/></svg></div>
-            <div class="connection-text"><strong>This is my phone</strong><span>Receive a notification when a guest calls.</span></div>
-            <button class="arrow-button" id="choose-phone" type="button" aria-label="Connect this phone">↗</button>
-          </div>
-          <p class="setup-footnote">You only need the ntfy app on the phone that receives alerts. The counter tablet runs this website.</p>
-        </div>
-
-        <aside class="setup-aside">
-          <div class="aside-top"><span>THE EXPERIENCE</span><span class="aside-index">01—03</span></div>
-          <div class="mini-scene">
-            <div class="scene-orbit"></div>
-            <div class="scene-bell"><svg viewBox="0 0 48 48"><path d="M24 7.5c-7 0-11.5 5.1-11.5 12.1v7.1l-4.1 6.1h31.2l-4.1-6.1v-7.1C35.5 12.6 31 7.5 24 7.5Z"/><path d="M19.5 37.2a4.8 4.8 0 0 0 9 0"/></svg></div>
-            <span class="scene-spark spark-one">✳</span><span class="scene-spark spark-two">✦</span>
-          </div>
-          <div class="aside-steps">
-            <div><b>01</b><span>Set up your counter</span></div>
-            <div><b>02</b><span>Connect your phone</span></div>
-            <div><b>03</b><span>Welcome your guests</span></div>
-          </div>
-          <div class="aside-note">“Good service starts<br>with being there.”</div>
-        </aside>
+      <div class="setup-grid">
+        <article class="setup-card">
+          <div class="card-number">01 <span>COUNTER DEVICE</span></div>
+          <div class="card-icon">⌁</div>
+          <h2>Set up this tablet</h2>
+          <p>Keep this device at your counter. Guests will use its full-screen call button.</p>
+          <button class="action-button" id="make-counter">Set up counter <span>→</span></button>
+        </article>
+        <article class="setup-card">
+          <div class="card-number">02 <span>YOUR PHONE</span></div>
+          <div class="card-icon phone-icon">◫</div>
+          <h2>Connect your phone</h2>
+          <p>Receive a notification when a guest asks for your team.</p>
+          <button class="action-button secondary" id="make-phone">Connect phone <span>→</span></button>
+        </article>
       </div>
-      <footer class="page-footer"><span>MADE FOR THE MOMENTS BETWEEN ORDERS.</span><span>COUNTER BELL <i>•</i> 01</span></footer>
-    </section>
+      <p class="privacy-note"><span class="tiny-check">✓</span> Your tablet and phone use the same private-to-you shop topic. Keep the code off public displays.</p>
+    </main>
+    <footer class="footer"><span>HELLO BELL</span><span>MADE FOR BETTER EVERYDAY SERVICE</span></footer>
+  </section>
 
-    <section class="screen phone-setup" id="phone-setup" hidden>
-      <header class="sub-header">
-        <button class="back-button" id="back-home" type="button">← <span>Back</span></button>
-        <div class="brand-name small-brand">COUNTER <span>BELL</span></div>
-      </header>
-      <div class="phone-setup-wrap">
-        <p class="overline"><span class="overline-line"></span> PHONE CONNECTION</p>
-        <h1>Bring the<br><em>signal</em> with you.</h1>
-        <p class="intro-copy">Enter the shop code shown on your counter tablet. We’ll connect your phone to the right bell.</p>
-        <div class="form-card">
-          <label for="shop-code">YOUR SHOP CODE</label>
-          <input id="shop-code" type="text" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="Paste your shop code">
-          <button class="gold-button full-button" id="connect-phone" type="button">Continue to phone setup <span>→</span></button>
-          <p class="form-help">The code is generated on your counter device. Copy it there and paste it here.</p>
-        </div>
-        <div class="phone-instructions" id="phone-instructions" hidden>
-          <div class="section-topline"><span>ONE-TIME PHONE SETUP</span><span class="tiny-dot"></span></div>
-          <h2>Almost <em>there.</em></h2>
-          <ol class="setup-list">
-            <li><span>1</span><p>Install <b>ntfy</b> from the Play Store or App Store.</p></li>
-            <li><span>2</span><p>Tap below to open the notification channel. Subscribe to the topic shown.</p></li>
-            <li><span>3</span><p>Allow notifications and choose a sound you’ll notice.</p></li>
-          </ol>
-          <div class="topic-box"><span>YOUR NOTIFICATION TOPIC</span><code id="topic-value"></code><button id="copy-topic" type="button">COPY</button></div>
-          <a class="gold-button full-button link-button" id="open-ntfy" href="https://ntfy.sh/app" target="_blank" rel="noopener">Open ntfy <span>↗</span></a>
-          <p class="form-help">After subscribing, send a test alert from the counter tablet. Keep this phone’s notification permission enabled.</p>
-        </div>
+  <section class="screen code-screen" id="code-screen" hidden>
+    <header class="topbar"><button class="back-link" id="back-setup">← Back</button><a class="brand" href="#"><span class="brand-mark">hb</span><span>hello<span class="brand-light">bell</span></span></a></header>
+    <main class="code-main">
+      <p class="eyebrow"><span></span> CONNECT YOUR DEVICES</p>
+      <h1>One shop.<br><i>One signal.</i></h1>
+      <p class="intro-text">Use the same shop code on both devices. Your counter sends the alert; your phone receives it.</p>
+      <div class="code-card">
+        <label for="shop-code">YOUR SHOP CODE</label>
+        <div class="code-row"><input id="shop-code" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="Paste the shop code from the tablet"><button id="copy-code" type="button">PASTE</button></div>
+        <p class="small-note">On the counter tablet, open ••• settings and copy the shop code. Paste it here.</p>
+        <button class="action-button" id="connect-phone" type="button">Connect this phone <span>→</span></button>
       </div>
-      <footer class="page-footer"><span>YOUR TEAM, ALWAYS WITH YOU.</span><span>COUNTER BELL <i>•</i> 02</span></footer>
-    </section>
-
-    <section class="screen counter-screen" id="counter-screen" hidden>
-      <header class="counter-nav">
-        <div class="brand-lockup compact-lockup">
-          <div class="brand-symbol"><svg viewBox="0 0 48 48"><path d="M24 7.5c-7 0-11.5 5.1-11.5 12.1v7.1l-4.1 6.1h31.2l-4.1-6.1v-7.1C35.5 12.6 31 7.5 24 7.5Z"/><path d="M19.5 37.2a4.8 4.8 0 0 0 9 0"/></svg></div>
-          <div><div class="brand-name">COUNTER <span>BELL</span></div><div class="brand-caption">A better way to say hello.</div></div>
-        </div>
-        <button class="settings-trigger" id="open-settings" type="button" aria-label="Open settings">•••</button>
-      </header>
-
-      <div class="counter-stage">
-        <div class="stage-copy">
-          <p class="overline"><span class="overline-line"></span> A WARM WELCOME AWAITS</p>
-          <h1>We’re here<br><em>for you.</em></h1>
-          <p>Need a little help? Let our team know.<br>We’ll be with you in just a moment.</p>
-        </div>
-        <div class="button-stage">
-          <div class="button-shadow"></div>
-          <button class="call-button" id="call-button" type="button">
-            <span class="button-halo halo-one"></span><span class="button-halo halo-two"></span>
-            <span class="bell-glyph"><svg viewBox="0 0 48 48"><path d="M24 7.5c-7 0-11.5 5.1-11.5 12.1v7.1l-4.1 6.1h31.2l-4.1-6.1v-7.1C35.5 12.6 31 7.5 24 7.5Z"/><path d="M19.5 37.2a4.8 4.8 0 0 0 9 0"/></svg></span>
-            <span class="button-title" id="button-title">Call our team</span>
-            <span class="button-caption">TAP ONCE · WE’LL BE RIGHT THERE</span>
-          </button>
-          <div class="stage-spark spark-left">✳</div><div class="stage-spark spark-right">✦</div>
-        </div>
-        <div class="stage-bottom">
-          <div class="availability"><span class="availability-dot"></span><span id="station-state">Ready when you are</span></div>
-          <span class="one-tap">ONE TAP IS ALL IT TAKES</span>
-        </div>
+      <div class="howto">
+        <div class="howto-title">FINISH THE PHONE SETUP</div>
+        <ol>
+          <li><b>Install ntfy</b><span>Get the official ntfy app on the phone that should ring.</span></li>
+          <li><b>Subscribe to your topic</b><span>Open ntfy, add a subscription, and paste the topic shown below.</span></li>
+          <li><b>Allow sound and vibration</b><span>Enable notifications, sound, vibration and urgent/high-priority alerts in your phone settings.</span></li>
+        </ol>
       </div>
-      <footer class="counter-footer"><span>THANK YOU FOR VISITING</span><span>POWERED BY <b>COUNTER BELL</b></span></footer>
+      <div class="topic-panel"><span>NTFY TOPIC</span><code id="topic-code"></code><button id="copy-topic" type="button">COPY TOPIC</button></div>
+      <div class="code-actions"><button class="action-button" id="open-ntfy">Open ntfy <span>↗</span></button><button class="text-button" id="test-alert">Send test alert</button></div>
+      <p class="small-note" id="test-result" aria-live="polite">After subscribing on your phone, send a test alert and confirm it arrives.</p>
+    </main>
+    <footer class="footer"><span>HELLO BELL</span><span>DEVICE CONNECTION</span></footer>
+  </section>
 
-      <div class="success-overlay" id="success-overlay" hidden>
-        <div class="success-card">
-          <div class="success-emblem"><span>✦</span></div>
-          <p class="success-kicker">YOUR MESSAGE IS ON ITS WAY</p>
-          <h2>Lovely.<br><em>We’ve got you.</em></h2>
-          <p class="success-copy">Our team has been notified and will be with you shortly. Thank you for your patience.</p>
-          <div class="progress-wrap"><div class="progress-track"><div id="cooldown-progress"></div></div><div class="progress-meta"><span id="cooldown-label">Ready for another call in 30 seconds</span><b id="cooldown-number">30</b></div></div>
-          <div class="success-foot">WE APPRECIATE YOU BEING HERE</div>
-        </div>
+  <section class="screen station-screen" id="station-screen" hidden>
+    <header class="station-header">
+      <div class="brand brand-inverse"><span class="brand-mark">hb</span><span>hello<span class="brand-light">bell</span></span></div>
+      <button class="settings-button" id="station-settings" aria-label="Owner settings">•••</button>
+    </header>
+    <main class="station-main">
+      <div class="welcome-copy">
+        <p class="eyebrow light"><span></span> WE’RE HAPPY YOU’RE HERE</p>
+        <h1>Need a<br><i>hand?</i></h1>
+        <p>Tap the button and our team<br class="desktop-break"> will be with you shortly.</p>
       </div>
-    </section>
-  </main>
+      <div class="call-area">
+        <div class="button-aura aura-a"></div><div class="button-aura aura-b"></div>
+        <button class="call-button" id="call-button" type="button">
+          <span class="bell-icon"><svg viewBox="0 0 64 64" aria-hidden="true"><path d="M32 9c-9.5 0-15.5 7-15.5 16.3v9.2L11 43h42l-5.5-8.5v-9.2C47.5 16 41.5 9 32 9Z"/><path d="M25.5 49a6.7 6.7 0 0 0 13 0"/></svg></span>
+          <span class="call-title" id="call-title">Tap to call</span>
+          <span class="call-subtitle">OUR TEAM IS HERE TO HELP</span>
+        </button>
+        <span class="orbit-star star-a">✳</span><span class="orbit-star star-b">✦</span>
+      </div>
+      <div class="station-status"><span class="online-dot"></span><span id="station-message">Ready when you are</span></div>
+    </main>
+    <footer class="station-footer"><span>THANK YOU FOR VISITING</span><span>HELLO BELL <b>•</b> CUSTOMER CARE</span></footer>
+    <div class="thankyou" id="thankyou" hidden>
+      <div class="thankyou-card">
+        <div class="thankyou-icon">✦</div>
+        <p class="eyebrow centered">YOUR MESSAGE HAS BEEN SENT</p>
+        <h2>Thank you.<br><i>We’re on our way.</i></h2>
+        <p class="thanks-copy">Our team has been notified. Please make yourself comfortable — someone will be with you shortly.</p>
+        <div class="countdown"><div class="count-track"><span id="count-fill"></span></div><div class="count-label"><span id="count-message">You can call again in 30 seconds</span><b id="count-number">30</b></div></div>
+        <div class="thanks-foot">WE APPRECIATE YOUR PATIENCE</div>
+      </div>
+    </div>
+  </section>
+</div>
 
-  <div class="settings-overlay" id="settings-overlay" hidden>
-    <section class="settings-panel" role="dialog" aria-modal="true" aria-labelledby="settings-title">
-      <div class="settings-heading"><div><p class="overline">COUNTER CONTROL</p><h2 id="settings-title">A few details.</h2></div><button id="close-settings" class="close-button" type="button" aria-label="Close settings">×</button></div>
-      <div class="settings-code"><span>SHOP NOTIFICATION TOPIC</span><code id="settings-topic"></code><button id="settings-copy" type="button">Copy topic</button></div>
-      <p class="settings-help">Use this topic when subscribing to ntfy on your phone. Keep it to yourself — anyone who knows it can send a notification.</p>
-      <button id="test-notification" class="gold-button full-button" type="button">Send a test notification <span>→</span></button>
-      <button id="change-device" class="plain-button" type="button">Back to device setup</button>
-    </section>
-  </div>
-  <div id="toast" class="toast" role="status" aria-live="polite"></div>
-  <script src="app.js"></script>
+<div class="settings-modal" id="settings-modal" hidden>
+  <section class="modal-card" role="dialog" aria-modal="true" aria-labelledby="settings-heading">
+    <div class="modal-head"><div><p class="eyebrow">OWNER CONTROLS</p><h2 id="settings-heading">Counter settings</h2></div><button id="close-settings" class="close-modal" aria-label="Close">×</button></div>
+    <p class="modal-copy">Share this shop code with your phone:</p>
+    <div class="topic-panel"><span>SHOP CODE</span><code id="settings-shop-code"></code><button id="settings-code-copy" type="button">COPY CODE</button></div>
+    <p class="modal-copy">Subscribe to this notification topic in ntfy:</p>
+    <div class="topic-panel"><span>NTFY TOPIC</span><code id="settings-topic"></code><button id="settings-copy">COPY TOPIC</button></div>
+    <button class="action-button full" id="settings-test">Send test alert <span>→</span></button>
+    <button class="text-button" id="reset-device">Back to setup</button>
+    <p class="small-note">For customer safety, keep this settings panel out of reach. Use Android screen pinning or kiosk mode to lock the tablet to this page.</p>
+  </section>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script src="./app.js?v=3"></script>
 </body>
 </html>
