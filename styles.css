@@ -19,3 +19,58 @@ body:before{content:"";position:fixed;inset:0;pointer-events:none;z-index:5;opac
 @media(max-width:390px){.app{width:calc(100% - 26px)}.hero-copy h1{font-size:49px}.setup-panel{padding:18px 15px}.story-steps span{font-size:7px}.receiver-intro h1{font-size:49px}.guest-button{width:min(77vw,340px)}.guest-hint{font-size:6px}.kiosk-copy h1{font-size:42px}.thanks-card h2{font-size:39px}}
 @media(orientation:landscape) and (max-height:520px){.kiosk-view{padding-top:calc(var(--safe-top) + 7px);padding-bottom:calc(var(--safe-bottom) + 7px)}.kiosk-center{grid-template-columns:.8fr 1.2fr}.kiosk-copy h1{font-size:42px;margin:8px 0}.kiosk-copy>p:last-child{font-size:10px}.guest-button{width:min(52vh,350px)}.guest-bell svg{width:38px}.guest-label{font-size:18px}.kiosk-footer{padding-top:6px}}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
+
+/* Call Bell v3 additions */
+.code-entry-row{display:flex;gap:8px;align-items:stretch}
+.code-entry-row input{min-width:0;flex:1}
+.camera-button{width:62px;flex:none;border:1px solid #d9ceb5;background:#f4f0e6;color:#8d7447;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px}
+.camera-button span{font-size:19px;line-height:1}.camera-button small{font:800 7px var(--display);letter-spacing:.12em}
+.scan-panel{margin-top:12px;padding:9px;background:#173d30}
+.scan-panel video{display:block;width:100%;max-height:240px;object-fit:cover;background:#091b14}
+.scan-caption{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:9px 2px 1px;color:#f5f2e9;font-size:9px}
+.scan-caption button{border:0;background:none;color:#e8d4a5;font:800 8px var(--display);letter-spacing:.12em}
+.settings-qr-wrap{display:grid;place-items:center;padding:13px 0 10px}
+.settings-qr-wrap img{display:block;width:176px;height:176px;padding:8px;background:#fff;border:1px solid #e6dfd1;image-rendering:auto}
+.settings-topic code{text-align:center;font-size:10px;letter-spacing:.02em}
+.kiosk-settings{font-size:0;display:grid;place-items:center}
+.kiosk-settings:before{content:"";width:15px;height:11px;border-top:1.7px solid #8e927f;border-bottom:1.7px solid #8e927f;display:block}
+.kiosk-settings:after{content:"";position:absolute;width:15px;height:1.7px;background:#8e927f}
+.kiosk-settings{position:relative}
+.kiosk-brand-mark{background:#fff;border-color:#fff;box-shadow:0 4px 16px #314d3710}
+.kiosk-brand-mark svg{stroke:#b3955d}
+.kiosk-brand{color:#6b806d}
+.kiosk-footer span:last-child{color:#8d8e7d}
+.creator-credit{color:#a39a83;font:800 7px var(--display);letter-spacing:.13em}
+@media(max-width:760px){.settings-qr-wrap img{width:160px;height:160px}}
+
+/* Call Bell v3 additions */
+.code-entry{display:flex;gap:8px}.code-entry input{min-width:0;flex:1}
+.camera-button{min-width:76px;border:1px solid #d8caa8;background:#f5f0e4;color:#8e7546;font:800 8px var(--display);letter-spacing:.1em}
+.camera-button span{display:block;margin-top:3px;font-size:7px}
+.settings-qr{display:flex;align-items:center;gap:12px;margin:9px 0}.settings-qr img{width:112px;height:112px;padding:6px;background:#fff;border:1px solid #e4ddce}.settings-qr code{font:10px ui-monospace,monospace;overflow-wrap:anywhere;color:var(--forest)}
+.creator-credit{text-align:center;flex:none;margin-top:7px;color:#a7a08d;font:700 7px var(--display);letter-spacing:.17em}.creator-credit b{color:#9c8050}
+.scanner-backdrop{position:fixed;inset:0;z-index:25;display:grid;place-items:center;padding:18px;background:#10291fe8;backdrop-filter:blur(9px)}
+.scanner-panel{width:min(100%,460px);padding:23px;background:#f8f4e9;box-shadow:0 25px 80px #0005}
+.scanner-panel h2{margin:9px 0 8px;color:var(--forest);font:500 29px var(--serif)}
+.scanner-help{margin:0 0 14px;color:#7e897d;font-size:10px;line-height:1.7}
+.camera-stage{position:relative;overflow:hidden;width:100%;aspect-ratio:1;background:#17251e;display:grid;place-items:center}
+.camera-stage video{width:100%;height:100%;object-fit:cover}
+.scan-frame{position:absolute;width:58%;aspect-ratio:1;border:2px solid #f2dca8;box-shadow:0 0 0 999px #07160d45;border-radius:12px}
+.scan-frame:before,.scan-frame:after{content:"";position:absolute;width:20px;height:20px;border-color:#fff;border-style:solid}
+.scan-frame:before{top:-2px;left:-2px;border-width:3px 0 0 3px}.scan-frame:after{right:-2px;bottom:-2px;border-width:0 3px 3px 0}
+.scanner-status{margin:10px 0 0;text-align:center;color:#8b8f81;font-size:10px}
+
+.walker-scene{position:relative;width:142px;height:142px;margin:0 auto 7px;display:grid;place-items:center}
+.walker{position:relative;z-index:2;width:138px;height:138px;overflow:visible;filter:drop-shadow(0 7px 5px #243c2d18);animation:walker-bob .55s ease-in-out infinite alternate}
+.walker-leg,.walker-arm{transform-box:fill-box;transform-origin:top center}
+.leg-front{animation:leg-step .55s ease-in-out infinite alternate}
+.leg-back{animation:leg-step .55s ease-in-out infinite alternate-reverse}
+.arm-front{animation:arm-step .55s ease-in-out infinite alternate}
+.arm-back{animation:arm-step .55s ease-in-out infinite alternate-reverse}
+@keyframes walker-bob{to{transform:translateY(-3px)}}
+@keyframes leg-step{to{transform:rotate(17deg) translateY(2px)}}
+@keyframes arm-step{to{transform:rotate(-15deg)}}
+.walker-shadow{position:absolute;bottom:8px;width:58px;height:10px;border-radius:50%;background:#1d493522;filter:blur(4px);animation:shadow-step .55s ease-in-out infinite alternate}
+@keyframes shadow-step{to{transform:scaleX(.82);opacity:.65}}
+.walker-spark{position:absolute;z-index:3;color:#b18e50;font-size:17px;animation:twinkle 1.8s ease-in-out infinite}
+.spark-left{left:5px;top:35px}.spark-right{right:3px;top:58px;animation-delay:.8s}
