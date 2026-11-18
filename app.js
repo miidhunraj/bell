@@ -1,170 +1,215 @@
-const $ = id => document.getElementById(id);
-const STORE = "callbell.v2";
+/* CALL BELL — stable device pairing, QR camera scan and guest call flow */
+"use strict";
+const $ = (id) => document.getElementById(id);
+const STORE = "callbell.v5";
+const NTFY = "https://ntfy.sh";
 const state = {
-  code:"", role:null, stream:null, audio:null, alarmTimer:null, vibrationTimer:null,
-  cooldownTimer:null, remaining:30, busy:false, alarmActive:false, lastMessage:""
+  code:"", role:null, stream:null, wakeLock:null, audio:null,
+  alarmTimer:null, vibrationTimer:null, cooldownTimer:null,
+  remaining:30, busy:false, alarmActive:false, lastMessage:"",
+  scanStream:null, scanFrame:null, scanCanvas:null, scanContext:null,
+  installPrompt:null, lastRingAt:0
 };
-const ntfyBase = "https://ntfy.sh";
+const requiredIds = [
+ "setup-view","connect-view","receiver-view","kiosk-view","setup-counter","setup-phone",
+ "shop-code","start-scan","scan-panel","scan-video","stop-scan","join-shop","connect-result",
+ "phone-topic","open-ntfy","go-receiver","receiver-status","alarm-state","test-alarm","push-state",
+ "test-push","receiver-topic","stream-label","guest-button","thanks-overlay","settings-modal",
+ "kiosk-settings","close-modal","settings-code","shop-qr","copy-settings-code",
+ "fullscreen-button","install-app","settings-test","reset-device","alarm-overlay","stop-alarm","toast"
+];
+const missing = requiredIds.filter(id=>!$(id));
+if(missing.length) console.error("Call Bell markup is missing:",missing.join(", "));
 
 function makeCode(){
-  const bytes = new Uint8Array(16);
+  const bytes=new Uint8Array(12);
   crypto.getRandomValues(bytes);
-  return "cb-" + Array.from(bytes,b=>b.toString(16).padStart(2,"0")).join("");
+  return "cb-"+Array.from(bytes,b=>b.toString(16).padStart(2,"0")).join("");
 }
-function normaliseCode(value){
-  let v=value.trim().toLowerCase().replace(/[^a-z0-9_-]/g,"");
-  if(v.startsWith("call-bell-")) v=v.slice("call-bell-".length);
-  if(v.startsWith("cb-")) return v;
+function cleanCode(value){
+  let v=String(value||"").trim();
+  try{if(v.startsWith("http")){const u=new URL(v);v=u.pathname.split("/").filter(Boolean).pop()||v;}}catch{}
+  v=decodeURIComponent(v).trim().toLowerCase().replace(/^call-bell-/,"").replace(/[^a-z0-9_-]/g,"");
   return v;
 }
-function topic(){ return "call-bell-" + state.code; }
-function save(){ localStorage.setItem(STORE,JSON.stringify({code:state.code,role:state.role})); }
+function topic(){return "call-bell-"+state.code;}
+function save(){try{localStorage.setItem(STORE,JSON.stringify({code:state.code,role:state.role}));}catch{}}
 function load(){
   try{const v=JSON.parse(localStorage.getItem(STORE)||"{}");state.code=v.code||"";state.role=v.role||null;}catch{}
 }
 function toast(message){
-  const el=$("toast");el.textContent=message;el.classList.add("show");
-  clearTimeout(toast.timer);toast.timer=setTimeout(()=>el.classList.remove("show"),2500);
+  const el=$("toast");if(!el)return;
+  el.textContent=message;el.classList.add("show");
+  clearTimeout(toast.timer);toast.timer=setTimeout(()=>el.classList.remove("show"),2600);
 }
-function screen(name){
-  for(const [id,key] of [["setup-view","setup"],["connect-view","connect"],["receiver-view","receiver"],["kiosk-view","kiosk"]]) $(id).hidden=key!==name;
+function showScreen(name){
+  const map={"setup":"setup-view","connect":"connect-view","receiver":"receiver-view","kiosk":"kiosk-view"};
+  Object.entries(map).forEach(([key,id])=>$(id).hidden=key!==name);
   document.body.classList.toggle("kiosk-mode",name==="kiosk");
 }
-function vibrate(pattern){try{if("vibrate" in navigator) navigator.vibrate(pattern);}catch{}}
-function audioContext(){
+function vibrate(pattern){
+  try{
+    if(typeof navigator.vibrate==="function") return navigator.vibrate(pattern);
+  }catch{}
+  return false;
+}
+function getAudio(){
   const C=window.AudioContext||window.webkitAudioContext;
   if(!C)return null;
   if(!state.audio)state.audio=new C();
   if(state.audio.state==="suspended")state.audio.resume().catch(()=>{});
   return state.audio;
 }
-function beep(freq,duration,when){
-  const ctx=audioContext();if(!ctx)return;
+function tone(freq,duration,at){
+  const ctx=getAudio();if(!ctx)return;
   const osc=ctx.createOscillator(),gain=ctx.createGain();
-  osc.type="sine";osc.frequency.setValueAtTime(freq,when);
-  gain.gain.setValueAtTime(.0001,when);
-  gain.gain.exponentialRampToValueAtTime(.25,when+.025);
-  gain.gain.exponentialRampToValueAtTime(.0001,when+duration);
-  osc.connect(gain);gain.connect(ctx.destination);osc.start(when);osc.stop(when+duration+.04);
+  osc.type="sine";osc.frequency.setValueAtTime(freq,at);
+  gain.gain.setValueAtTime(.0001,at);
+  gain.gain.exponentialRampToValueAtTime(.20,at+.025);
+  gain.gain.exponentialRampToValueAtTime(.0001,at+duration);
+  osc.connect(gain);gain.connect(ctx.destination);osc.start(at);osc.stop(at+duration+.04);
 }
 function playChime(){
-  const ctx=audioContext();if(!ctx)return false;
+  const ctx=getAudio();if(!ctx)return false;
   const t=ctx.currentTime;
-  beep(784,.28,t);beep(988,.32,t+.22);beep(1175,.42,t+.48);
+  tone(784,.25,t);tone(988,.3,t+.22);tone(1175,.38,t+.48);
   return true;
 }
 function stopAlarm(){
   state.alarmActive=false;
   clearInterval(state.alarmTimer);clearInterval(state.vibrationTimer);
   state.alarmTimer=state.vibrationTimer=null;
-  try{navigator.vibrate?.(0);}catch{}
+  vibrate(0);
   $("alarm-overlay").hidden=true;
 }
-function startAlarm(message="A guest has called from the counter."){
+function startAlarm(message){
   if(state.alarmActive)return;
   state.alarmActive=true;
-  $("alarm-time").textContent=message;
+  $("alarm-time").textContent=message||"Someone is waiting for you.";
   $("alarm-overlay").hidden=false;
-  playChime();vibrate([700,250,700,250,1000]);
-  state.alarmTimer=setInterval(()=>{if(state.alarmActive)playChime();},2400);
-  state.vibrationTimer=setInterval(()=>{if(state.alarmActive)vibrate([700,250,700,250,1000]);},2800);
+  playChime();vibrate([700,220,700,220,900]);
+  state.alarmTimer=setInterval(()=>{if(state.alarmActive)playChime();},2600);
+  state.vibrationTimer=setInterval(()=>{if(state.alarmActive)vibrate([700,220,700,220,900]);},3200);
+  if("Notification" in window && Notification.permission==="granted"){
+    try{new Notification("Call Bell — someone is waiting",{body:message||"Please come to the counter.",icon:"./icon-192.png",tag:"call-bell-ring",renotify:true});}catch{}
+  }
 }
-function setReceiverStatus(text,live=false){
-  $("receiver-status").dataset.state=live?"live":"";
-  $("receiver-status").lastChild.textContent=text;
-  $("stream-label").textContent=live?"Live connection · listening for calls":"Reconnecting · keep this page open";
+function setReceiverStatus(label,live){
+  const el=$("receiver-status");
+  el.dataset.state=live?"live":"";
+  el.innerHTML='<i></i> '+label;
+  $("stream-label").textContent=live?"Connected · listening for your call":"Reconnecting · keep this page open";
 }
 function connectStream(){
   if(state.stream){state.stream.close();state.stream=null;}
   if(!state.code)return;
-  const url=ntfyBase+"/"+encodeURIComponent(topic())+"/sse";
-  try{
-    const stream=new EventSource(url);
-    state.stream=stream;
-    stream.onopen=()=>setReceiverStatus("Listening",true);
-    stream.onerror=()=>setReceiverStatus("Reconnecting",false);
-    stream.onmessage=(event)=>{
-      try{
-        const data=JSON.parse(event.data);
-        if(data.event==="message" && data.id!==state.lastMessage){
-          state.lastMessage=data.id||String(Date.now());
-          $("push-state").textContent="A message reached this phone";
-          startAlarm(data.message||"A guest has called from the counter.");
-        }
-      }catch{}
-    };
-  }catch(error){console.warn("ntfy live stream could not start",error);setReceiverStatus("Offline",false);}
+  const source=new EventSource(NTFY+"/"+encodeURIComponent(topic())+"/sse");
+  state.stream=source;
+  source.onopen=()=>setReceiverStatus("Listening",true);
+  source.onerror=()=>setReceiverStatus("Reconnecting",false);
+  source.onmessage=(event)=>{
+    try{
+      const data=JSON.parse(event.data);
+      if(data.event!=="message" || (data.id&&data.id===state.lastMessage))return;
+      state.lastMessage=data.id||String(Date.now());
+      startAlarm(data.message||"Someone is waiting for you.");
+      $("push-state").textContent="A call reached this phone";
+    }catch(err){console.warn("Could not read Call Bell event",err);}
+  };
 }
 async function sendNtfy(message,isTest=false){
   const query=new URLSearchParams({
-    title:isTest?"Call Bell test":"A guest is waiting",
-    priority:"urgent",
-    tags:"bell,rotating_light",
-    click:location.href
+    title:isTest?"Call Bell test":"Someone is waiting",
+    priority:"urgent",tags:"bell,rotating_light",click:location.href
   });
-  const url=ntfyBase+"/"+encodeURIComponent(topic())+"?"+query.toString();
   try{
-    const response=await fetch(url,{
-      method:"POST",
-      headers:{"Content-Type":"text/plain;charset=UTF-8"},
-      body:message
+    const response=await fetch(NTFY+"/"+encodeURIComponent(topic())+"?"+query,{
+      method:"POST",headers:{"Content-Type":"text/plain;charset=UTF-8"},body:message
     });
     return response.ok;
-  }catch(error){
-    console.error("ntfy request failed",error);
-    return false;
+  }catch(err){console.error("ntfy send failed",err);return false;}
+}
+async function copyText(value,label){
+  try{
+    await navigator.clipboard.writeText(value);
+    toast(label+" copied");
+  }catch{
+    const field=document.createElement("textarea");field.value=value;
+    field.style.position="fixed";field.style.opacity="0";document.body.appendChild(field);
+    field.select();
+    try{document.execCommand("copy");toast(label+" copied");}
+    catch{toast("Please select and copy the code manually.");}
+    field.remove();
   }
 }
-async function copy(value,label){
-  try{await navigator.clipboard.writeText(value);toast(label+" copied");}
-  catch{toast("Copy unavailable — please select and copy the code.");}
+function makeQr(){
+  if(!state.code)return;
+  $("shop-qr").src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&margin=8&data="+encodeURIComponent(state.code);
+  $("shop-qr").alt="Scan this QR code to connect to Call Bell";
 }
-function showCounter(){
+async function requestWakeLock(){
+  try{if("wakeLock" in navigator&&!state.wakeLock)state.wakeLock=await navigator.wakeLock.request("screen");}catch{}
+}
+function enterKiosk(){
   if(!state.code)state.code=makeCode();
-  state.role="counter";save();screen("kiosk");
-  // Fullscreen is attempted only in response to this user gesture.
-  const root=document.documentElement;
-  if(!document.fullscreenElement && root.requestFullscreen){
-    root.requestFullscreen().catch(()=>{});
+  state.role="counter";save();showScreen("kiosk");
+  $("settings-code").textContent=state.code;makeQr();requestWakeLock();
+  if(document.documentElement.requestFullscreen&&!document.fullscreenElement){
+    document.documentElement.requestFullscreen().catch(()=>{});
   }
-  if("wakeLock" in navigator)navigator.wakeLock.request("screen").catch(()=>{});
-  $("settings-code").textContent=state.code;
 }
-function showPhoneConnect(){
-  state.role="phone";save();screen("connect");
+function enterPhoneSetup(){
+  state.role="phone";save();showScreen("connect");
+  $("shop-code").value=state.code||"";
   $("connect-result").hidden=true;
 }
 function joinPhone(){
-  const code=normaliseCode($("shop-code").value);
-  if(!code || code.length<8){toast("Enter the shop code shown on your counter tablet.");$("shop-code").focus();return;}
+  const code=cleanCode($("shop-code").value);
+  if(code.length<8){toast("Please scan or enter the shop code from your tablet.");$("shop-code").focus();return;}
   state.code=code;state.role="phone";save();
+  $("shop-code").value=code;
   $("phone-topic").textContent=topic();
-  $("open-ntfy").textContent="Open in ntfy app";
   $("connect-result").hidden=false;
+  // Ask for web notification permission only after a deliberate user action.
+  if("Notification" in window && Notification.permission==="default"){
+    Notification.requestPermission().then(p=>{
+      if(p==="granted")toast("Browser notifications enabled");
+    }).catch(()=>{});
+  }
 }
-function showReceiver(){
-  if(!state.code){toast("Connect using your shop code first.");return;}
-  state.role="phone";save();screen("receiver");
-  $("receiver-topic").textContent=topic();
-  connectStream();
+function openNtfyApp(){
+  const appUrl="ntfy://ntfy.sh/"+encodeURIComponent(topic());
+  // Try native app scheme. If it is not registered, leave the topic visible for manual setup.
+  window.location.href=appUrl;
+  setTimeout(()=>toast("If ntfy did not open, install it and subscribe to the topic shown here."),1200);
 }
+function openReceiver(){
+  if(!state.code){toast("Connect this phone to your shop first.");return;}
+  state.role="phone";save();showScreen("receiver");
+  $("receiver-topic").textContent=topic();connectStream();
+}
+function openSettings(){
+  $("settings-code").textContent=state.code||"Not generated yet";
+  makeQr();
+  $("fullscreen-button").innerHTML=document.fullscreenElement?"Exit fullscreen <span>⛶</span>":"Enter fullscreen <span>⛶</span>";
+  $("settings-modal").hidden=false;
+}
+function closeSettings(){$("settings-modal").hidden=true;}
 async function testPush(){
   $("push-state").textContent="Sending test…";
-  const ok=await sendNtfy("Call Bell test alert. If you hear this, phone notifications are reaching your device.",true);
-  $("push-state").textContent=ok?"Test sent — check ntfy notifications":"Could not send — check internet and topic";
-  toast(ok?"Test sent. Check the ntfy app.":"Test failed. Check your connection.");
+  const ok=await sendNtfy("This is a Call Bell test. Check that the ntfy app received it.",true);
+  $("push-state").textContent=ok?"Sent to ntfy · check your notification":"Could not send · check internet";
+  toast(ok?"Test sent to ntfy":"Test notification failed");
 }
 function startCooldown(){
-  state.remaining=30;
-  $("thanks-overlay").hidden=false;
-  $("guest-button").disabled=true;
-  $("countdown-number").textContent="30";
-  $("countdown-text").textContent="You can call again in 30 seconds";
+  state.remaining=30;$("thanks-overlay").hidden=false;$("guest-button").disabled=true;
+  $("countdown-number").textContent="30";$("countdown-text").textContent="You can call again in 30 seconds";
   $("countdown-bar").style.width="100%";
+  clearInterval(state.cooldownTimer);
   state.cooldownTimer=setInterval(()=>{
     state.remaining--;
     $("countdown-number").textContent=String(state.remaining);
-    $("countdown-text").textContent=state.remaining>0?`You can call again in ${state.remaining} seconds`:"Ready for another guest";
+    $("countdown-text").textContent=state.remaining>0?"You can call again in "+state.remaining+" seconds":"Ready for another guest";
     $("countdown-bar").style.width=(state.remaining/30*100)+"%";
     if(state.remaining<=0){
       clearInterval(state.cooldownTimer);state.cooldownTimer=null;
@@ -174,148 +219,153 @@ function startCooldown(){
 }
 async function guestCall(){
   if(state.busy||state.cooldownTimer)return;
-  // One short haptic acknowledgement on the customer tablet at the instant of tap.
-  try{if(navigator.vibrate)navigator.vibrate(70);}catch{}
+  vibrate(65); // short acknowledgement on the customer tablet, where supported
   state.busy=true;$("guest-button").disabled=true;
-  $("guest-label").textContent="Sending your message…";
-  const ok=await sendNtfy("A guest is waiting at the counter. Please assist them.",false);
+  const label=$("guest-button").querySelector(".guest-label");label.textContent="Sending your call…";
+  const ok=await sendNtfy("A guest is waiting for you. Please come to the counter.",false);
   state.busy=false;
   if(!ok){
-    $("guest-button").disabled=false;
-    $("guest-label").textContent="Tap to call our team";
-    toast("Could not send. Please try again or let a team member know.");
+    $("guest-button").disabled=false;label.textContent="Tap to call me";
+    toast("Could not send the call. Please check the internet connection.");
     return;
   }
-  $("guest-label").textContent="Message sent";
+  label.textContent="Call sent";
   startCooldown();
 }
-async function testLocalAlarm(){
-  // This button click is the required user gesture to unlock mobile audio.
-  const ok=playChime();
-  vibrate([500,180,500,180,700]);
-  $("alarm-state").textContent=ok?("Sound "+(navigator.vibrate?"and vibration":"; vibration not supported here")):"Audio is unavailable in this browser";
-  toast(navigator.vibrate?"Sound and vibration test played":"Sound test played; this browser does not expose vibration");
+function testLocalAlarm(){
+  const sound=playChime();
+  const buzz=vibrate([450,180,450,180,700]);
+  $("alarm-state").textContent=sound?(buzz?"Sound and vibration test played":"Sound works · vibration is not supported here"):"Audio is unavailable in this browser";
+  toast(buzz?"Sound and vibration tested":"Sound tested · device/browser does not expose vibration");
 }
-function openSettings(){
-  $("settings-code").textContent=state.code||"Not generated yet";
-  if(state.code) $("shop-qr").src="https://api.qrserver.com/v1/create-qr-code/?size=260x260&data="+encodeURIComponent(state.code);
-  $("fullscreen-button").innerHTML=document.fullscreenElement?'Exit fullscreen <span>⛶</span>':'Enter fullscreen <span>⛶</span>';
-  $("settings-modal").hidden=false;
-}
-function closeSettings(){$("settings-modal").hidden=true;}
-
-function closeScanner(){
-  if(state.scanLoop)cancelAnimationFrame(state.scanLoop);
-  state.scanLoop=null;
-  if(state.scannerStream){state.scannerStream.getTracks().forEach(t=>t.stop());state.scannerStream=null;}
-  $("scanner-modal").hidden=true;
-}
-async function startScanner(){
-  $("scanner-modal").hidden=false;
-  $("scanner-status").textContent="Requesting camera permission…";
-  if(!navigator.mediaDevices?.getUserMedia){
-    $("scanner-status").textContent="Camera scanning requires HTTPS and a supported browser.";
+async function startQrScan(){
+  const panel=$("scan-panel"),video=$("scan-video");
+  panel.hidden=false;
+  $("scan-hint").textContent="Opening your rear camera…";
+  if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){
+    $("scan-hint").textContent="Camera needs HTTPS and browser permission. Paste the code manually if needed.";
     return;
   }
-  if(!("BarcodeDetector" in window)){
-    $("scanner-status").textContent="QR scanning is not supported by this browser. Use the manual code field.";
+  if(typeof window.jsQR!=="function"){
+    $("scan-hint").textContent="QR scanner library did not load. Paste the shop code manually.";
     return;
   }
   try{
-    state.scannerStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:"environment"}},audio:false});
-    $("scanner-video").srcObject=state.scannerStream;
-    await $("scanner-video").play();
-    state.barcodeDetector=new BarcodeDetector({formats:["qr_code"]});
-    $("scanner-status").textContent="Point the camera at the tablet’s QR code…";
-    const scan=async()=>{
-      if(!state.scannerStream||$("scanner-modal").hidden)return;
-      try{
-        const codes=await state.barcodeDetector.detect($("scanner-video"));
-        if(codes.length){
-          const raw=(codes[0].rawValue||"").trim();
-          const decoded=normaliseCode(raw);
-          if(decoded.length>=8){
-            $("shop-code").value=decoded;
-            try{await navigator.clipboard.writeText(decoded);}catch{}
-            closeScanner();
-            toast("Shop code scanned and filled in");
-            joinPhone();
-            return;
+    state.scanStream=await navigator.mediaDevices.getUserMedia({audio:false,video:{facingMode:{ideal:"environment"},width:{ideal:1280},height:{ideal:720}}});
+    video.srcObject=state.scanStream;
+    await video.play();
+    $("scan-hint").textContent="Camera ready — hold the tablet QR inside the camera view.";
+    state.scanCanvas=document.createElement("canvas");
+    state.scanContext=state.scanCanvas.getContext("2d",{willReadFrequently:true});
+    const scan=()=>{
+      if(!state.scanStream||panel.hidden)return;
+      if(video.readyState>=2){
+        const w=video.videoWidth,h=video.videoHeight;
+        if(w&&h){
+          state.scanCanvas.width=w;state.scanCanvas.height=h;
+          state.scanContext.drawImage(video,0,0,w,h);
+          const frame=state.scanContext.getImageData(0,0,w,h);
+          const result=window.jsQR(frame.data,w,h,{inversionAttempts:"attemptBoth"});
+          if(result&&result.data){
+            const found=cleanCode(result.data);
+            if(found.length>=8){
+              $("shop-code").value=found;
+              copyText(found,"Shop code");
+              stopQrScan();joinPhone();return;
+            }
           }
         }
-      }catch{}
-      state.scanLoop=requestAnimationFrame(scan);
+      }
+      state.scanFrame=requestAnimationFrame(scan);
     };
     scan();
   }catch(err){
-    $("scanner-status").textContent=err.name==="NotAllowedError"?"Camera permission was denied. Allow camera access and try again.":"Could not start the camera. You can paste the code manually.";
+    panel.hidden=false;
+    $("scan-hint").textContent=err.name==="NotAllowedError"
+      ?"Camera permission was blocked. Allow camera access for this website in your browser settings, then try again."
+      :"Could not start the camera. Check HTTPS and camera permission, or paste the code manually.";
+    console.error("Camera start failed",err);
   }
 }
-
+function stopQrScan(){
+  if(state.scanFrame)cancelAnimationFrame(state.scanFrame);
+  state.scanFrame=null;
+  if(state.scanStream){state.scanStream.getTracks().forEach(t=>t.stop());state.scanStream=null;}
+  $("scan-video").srcObject=null;
+  $("scan-panel").hidden=true;
+  $("scan-hint").textContent="Scan the QR on your tablet, or paste the shop code manually.";
+}
 function resetDevice(){
   if(!confirm("Reset this device's Call Bell setup?"))return;
-  stopAlarm();if(state.stream)state.stream.close();
-  if(state.cooldownTimer)clearInterval(state.cooldownTimer);
-  localStorage.removeItem(STORE);state.code="";state.role=null;screen("setup");closeSettings();
+  stopAlarm();stopQrScan();
+  if(state.stream){state.stream.close();state.stream=null;}
+  clearInterval(state.cooldownTimer);
+  localStorage.removeItem(STORE);state.code="";state.role=null;
+  closeSettings();showScreen("setup");
 }
-$("setup-counter").addEventListener("click",showCounter);
-$("setup-phone").addEventListener("click",showPhoneConnect);
-$("back-setup").addEventListener("click",()=>screen("setup"));
-$("join-shop").addEventListener("click",joinPhone);
-$("scan-code").addEventListener("click",startScanner);
-$("close-scanner").addEventListener("click",closeScanner);
-$("scanner-manual").addEventListener("click",closeScanner);
-$("scanner-modal").addEventListener("click",e=>{if(e.target===$("scanner-modal"))closeScanner();});
-document.addEventListener("fullscreenchange",()=>{
-  if(!$("settings-modal").hidden)$("fullscreen-button").innerHTML=document.fullscreenElement?'Exit fullscreen <span>⛶</span>':'Enter fullscreen <span>⛶</span>';
-});
-window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();state.installPrompt=e;});
-$("install-app").addEventListener("click",async()=>{
+function toggleFullscreen(){
+  if(document.fullscreenElement){
+    document.exitFullscreen().then(()=>toast("Exited fullscreen")).catch(()=>toast("Use your browser controls to exit fullscreen."));
+  }else if(document.documentElement.requestFullscreen){
+    document.documentElement.requestFullscreen().then(()=>toast("Fullscreen enabled")).catch(()=>toast("Fullscreen is not available in this browser."));
+  }else toast("Use your browser menu to enter fullscreen.");
+}
+function installApp(){
   if(state.installPrompt){
     state.installPrompt.prompt();
-    await state.installPrompt.userChoice;
-    state.installPrompt=null;
-  }else{
-    toast(/iPhone|iPad|iPod/i.test(navigator.userAgent)?"In Safari: Share → Add to Home Screen":"Open browser menu → Install app / Add to Home Screen");
+    state.installPrompt.userChoice.finally(()=>state.installPrompt=null);
+    return;
   }
-});
-$("copy-phone-topic").addEventListener("click",()=>copy(topic(),"ntfy topic"));
-$("open-ntfy").addEventListener("click",()=>{
-  // Use ntfy's app URI scheme so Android/iOS can hand off to the installed app.
-  window.location.href="ntfy://ntfy.sh/"+encodeURIComponent(topic());
-});
-$("go-receiver").addEventListener("click",showReceiver);
+  toast(/iPhone|iPad|iPod/i.test(navigator.userAgent)
+    ?"In Safari, tap Share → Add to Home Screen."
+    :"Open your browser menu → Install app or Add to Home Screen.");
+}
+
+/* All event wiring happens after the markup has loaded. */
+$("setup-counter").addEventListener("click",enterKiosk);
+$("setup-phone").addEventListener("click",enterPhoneSetup);
+$("back-setup").addEventListener("click",()=>{stopQrScan();showScreen("setup");});
+$("join-shop").addEventListener("click",joinPhone);
+$("start-scan").addEventListener("click",startQrScan);
+$("stop-scan").addEventListener("click",stopQrScan);
+$("copy-phone-topic").addEventListener("click",()=>copyText(topic(),"Topic"));
+$("open-ntfy").addEventListener("click",openNtfyApp);
+$("go-receiver").addEventListener("click",openReceiver);
 $("test-alarm").addEventListener("click",testLocalAlarm);
 $("test-push").addEventListener("click",testPush);
-$("copy-receiver-topic").addEventListener("click",()=>copy(topic(),"ntfy topic"));
+$("copy-receiver-topic").addEventListener("click",()=>copyText(topic(),"Topic"));
 $("guest-button").addEventListener("click",guestCall);
 $("kiosk-settings").addEventListener("click",openSettings);
 $("receiver-settings").addEventListener("click",openSettings);
 $("close-modal").addEventListener("click",closeSettings);
 $("settings-modal").addEventListener("click",e=>{if(e.target===$("settings-modal"))closeSettings();});
-$("copy-settings-code").addEventListener("click",()=>copy(state.code,"Shop code"));
-$("fullscreen-button").addEventListener("click",async()=>{
-  try{
-    if(document.fullscreenElement){await document.exitFullscreen();toast("Exited fullscreen");}
-    else if(document.documentElement.requestFullscreen){await document.documentElement.requestFullscreen();toast("Fullscreen enabled");}
-    else toast("Use your browser menu to enter fullscreen.");
-  }catch{toast("Fullscreen is controlled by your browser on this device.");}
-  $("fullscreen-button").innerHTML=document.fullscreenElement?'Exit fullscreen <span>⛶</span>':'Enter fullscreen <span>⛶</span>';
-});
+$("copy-settings-code").addEventListener("click",()=>copyText(state.code,"Shop code"));
+$("fullscreen-button").addEventListener("click",toggleFullscreen);
+$("install-app").addEventListener("click",installApp);
 $("settings-test").addEventListener("click",testPush);
 $("reset-device").addEventListener("click",resetDevice);
 $("stop-alarm").addEventListener("click",stopAlarm);
+document.addEventListener("fullscreenchange",()=>{
+  if(!$("settings-modal").hidden)$("fullscreen-button").innerHTML=document.fullscreenElement?"Exit fullscreen <span>⛶</span>":"Enter fullscreen <span>⛶</span>";
+});
+window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();state.installPrompt=e;});
 document.addEventListener("visibilitychange",()=>{
-  if(document.visibilityState==="visible"&&state.role==="phone"&&state.code&&$("receiver-view").hidden===false)connectStream();
+  if(document.visibilityState==="visible"){
+    if(state.role==="counter")requestWakeLock();
+    if(state.role==="phone"&&!$("receiver-view").hidden)connectStream();
+  }
 });
 window.addEventListener("online",()=>{if(state.role==="phone"&&!$("receiver-view").hidden)connectStream();});
-window.addEventListener("beforeunload",()=>{if(state.stream)state.stream.close();if(state.cooldownTimer)clearInterval(state.cooldownTimer);});
-
+window.addEventListener("beforeunload",()=>{
+  if(state.stream)state.stream.close();
+  stopQrScan();
+});
 load();
-if(state.role==="counter"&&state.code){$("settings-code").textContent=state.code;screen("kiosk");}
-else if(state.role==="phone"&&state.code){$("shop-code").value=state.code;screen("connect");joinPhone();}
-else screen("setup");
-
+if(state.role==="counter"&&state.code){
+  $("settings-code").textContent=state.code;showScreen("kiosk");
+}else if(state.role==="phone"&&state.code){
+  $("shop-code").value=state.code;showScreen("connect");joinPhone();
+}else showScreen("setup");
 if("serviceWorker" in navigator){
   window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js").catch(err=>console.warn("Service worker registration failed",err)));
 }
