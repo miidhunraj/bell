@@ -1,7 +1,7 @@
 {
-  "name": "Counter Bell",
-  "short_name": "Bell",
-  "description": "A thoughtful one-tap customer calling system.",
+  "name": "Call Bell",
+  "short_name": "Call Bell",
+  "description": "A thoughtful one-tap way to call me.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
