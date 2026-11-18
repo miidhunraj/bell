@@ -10,9 +10,10 @@
    ========================================================================== */
 "use strict";
 
-const $ = (id) => document.getElementById(id);
-const STORE = "callbell.v6";
-const NTFY = "https://ntfy.sh";
+(() => {
+  const $ = (id) => document.getElementById(id);
+  const STORE = "callbell.v6";
+  const NTFY = "https://ntfy.sh";
 
 const state = {
   code: "",
@@ -673,28 +674,35 @@ function attachEvents() {
   });
 }
 
-// Bootstrap
-document.addEventListener("DOMContentLoaded", () => {
-  attachEvents();
-  load();
+  // Bootstrap
+  const init = () => {
+    attachEvents();
+    load();
 
-  if (state.role === "counter" && state.code) {
-    $("settings-code").textContent = state.code;
-    updateQRCodes();
-    showScreen("kiosk");
-  } else if (state.role === "phone" && state.code) {
-    $("shop-code").value = state.code;
-    $("receiver-topic").textContent = topic();
-    updateQRCodes();
-    showScreen("receiver");
-    connectStream();
+    if (state.role === "counter" && state.code) {
+      $("settings-code").textContent = state.code;
+      updateQRCodes();
+      showScreen("kiosk");
+    } else if (state.role === "phone" && state.code) {
+      $("shop-code").value = state.code;
+      $("receiver-topic").textContent = topic();
+      updateQRCodes();
+      showScreen("receiver");
+      connectStream();
+    } else {
+      showScreen("setup");
+    }
+
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("./sw.js").catch(err => {
+        console.warn("Service worker registration error", err);
+      });
+    }
+  };
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
   } else {
-    showScreen("setup");
+    init();
   }
-
-  if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.register("./sw.js").catch(err => {
-      console.warn("Service worker registration error", err);
-    });
-  }
-});
+})();
