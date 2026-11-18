@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="theme-color" content="#173d30">
-  <meta name="description" content="A thoughtful one-tap way to let me know you need a hand.">
+  <meta name="theme-color" content="#122b22">
+  <meta name="description" content="Call Bell — modern hospitality bell. One tap on the counter, instant ring on your phone.">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Call Bell">
@@ -13,195 +13,548 @@
   <link rel="apple-touch-icon" href="./apple-touch-icon.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,500;0,600;1,500;1,600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="./styles.css?v=5">
-  <title>Call Bell</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500;1,600&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./styles.css?v=6">
+  <title>Call Bell — Hospitality Bell</title>
 </head>
 <body>
-  <div class="ambient ambient-one"></div><div class="ambient ambient-two"></div>
-  <main class="app" id="app">
+  <!-- Ambient backdrop lighting -->
+  <div class="ambient-glow glow-top" aria-hidden="true"></div>
+  <div class="ambient-glow glow-bottom" aria-hidden="true"></div>
 
-    <!-- SETUP -->
+  <main class="app-shell" id="app">
+
+    <!-- ================= 01. SETUP VIEW ================= -->
     <section class="view setup-view" id="setup-view">
-      <header class="topbar">
-        <a class="brand" href="#" aria-label="Call Bell home">
-          <span class="brand-mark"><svg viewBox="0 0 32 32"><path d="M16 4.8a8 8 0 0 0-8 8v5.1l-2.2 3.2h20.4L24 17.9v-5.1a8 8 0 0 0-8-8Z"/><path d="M13 24a3 3 0 0 0 6 0"/></svg></span>
-          <span><b>CALL BELL</b><small>A little help, right when you need it</small></span>
+      <header class="app-header">
+        <a class="brand" href="#" aria-label="Call Bell Home">
+          <span class="brand-symbol">
+            <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M16 4.8a8 8 0 0 0-8 8v5.1l-2.2 3.2h20.4L24 17.9v-5.1a8 8 0 0 0-8-8Z"/>
+              <path d="M13 24a3 3 0 0 0 6 0"/>
+            </svg>
+          </span>
+          <span class="brand-text">
+            <b>CALL BELL</b>
+            <small>Hospitality Edition</small>
+          </span>
         </a>
-        <span class="top-pill"><i></i> HERE WHEN YOU NEED ME</span>
+        <div class="header-pill">
+          <span class="pulse-dot"></span>
+          <span>READY TO PAIR</span>
+        </div>
       </header>
 
-      <section class="hero-copy">
-        <p class="eyebrow"><span></span> A SMALL TOUCH OF GOOD SERVICE</p>
-        <h1>A warm welcome<br>starts with <em>hello.</em></h1>
-        <p class="hero-description">Need a hand? Just one little tap lets me know. I’ll be right there to help — so you can relax and enjoy your visit.</p>
-      </section>
+      <div class="hero-block">
+        <div class="badge-tag">HOSPITALITY PROTOCOL · V2.0</div>
+        <h1>Elevate service with<br><em>one quiet touch.</em></h1>
+        <p class="hero-subtitle">Two devices in effortless synchronization. Your counter tablet lets guests call in a tap; your phone sounds the alert immediately.</p>
+      </div>
 
-      <section class="setup-grid">
-        <article class="setup-panel">
-          <div class="panel-index">01 <span>·</span> CHOOSE THIS DEVICE</div>
-          <h2>Let’s get<br>connected.</h2>
-          <p class="panel-copy">One device for your guests. One phone for you. A simple little connection.</p>
-          <button class="device-choice" id="setup-counter" type="button">
-            <span class="choice-icon"><svg viewBox="0 0 24 24"><rect x="2.5" y="3.5" width="19" height="14" rx="2"/><path d="M8 21h8m-4-3.5V21"/></svg></span>
-            <span class="choice-copy"><b>This is the customer tablet</b><small>Show the full-screen call button</small></span>
-            <span class="choice-arrow">↗</span>
-          </button>
-          <button class="device-choice" id="setup-phone" type="button">
-            <span class="choice-icon phone-choice"><svg viewBox="0 0 24 24"><rect x="7" y="2" width="10" height="20" rx="2.5"/><path d="M11 18.5h2"/></svg></span>
-            <span class="choice-copy"><b>This is my phone</b><small>Get an alert when someone calls</small></span>
-            <span class="choice-arrow">↗</span>
-          </button>
-          <div class="privacy-note"><span>✳</span> A private shop code keeps your two devices connected.</div>
+      <div class="setup-grid">
+        <article class="setup-card">
+          <div class="card-eyebrow">STEP 01 · CONFIGURE DEVICE</div>
+          <h2>Select this device’s role</h2>
+          <p class="card-desc">Assign whether this screen acts as the customer-facing calling station or your personal notification handset.</p>
+
+          <div class="device-actions">
+            <button class="device-card-btn" id="setup-counter" type="button">
+              <div class="device-icon counter-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="2.5" y="3.5" width="19" height="14" rx="2.5"/>
+                  <path d="M8 21h8M12 17.5V21"/>
+                </svg>
+              </div>
+              <div class="device-info">
+                <strong>Customer Counter Tablet</strong>
+                <span>Full-screen kiosk bell with instant ring response</span>
+              </div>
+              <div class="device-arrow">→</div>
+            </button>
+
+            <button class="device-card-btn" id="setup-phone" type="button">
+              <div class="device-icon phone-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="7" y="2.5" width="10" height="19" rx="2.5"/>
+                  <path d="M11 18.5h2"/>
+                </svg>
+              </div>
+              <div class="device-info">
+                <strong>Shopkeeper Handset (Phone)</strong>
+                <span>Instant chimes, vibration pulses and ntfy alerts</span>
+              </div>
+              <div class="device-arrow">→</div>
+            </button>
+          </div>
+
+          <div class="security-note">
+            <svg viewBox="0 0 16 16" width="14" height="14" fill="currentColor">
+              <path d="M8 1a3.5 3.5 0 0 0-3.5 3.5V6H3.75A1.75 1.75 0 0 0 2 7.75v5.5C2 14.216 2.784 15 3.75 15h8.5A1.75 1.75 0 0 0 14 13.25v-5.5A1.75 1.75 0 0 0 12.25 6h-.75V4.5A3.5 3.5 0 0 0 8 1Zm2 5H6V4.5a2 2 0 1 1 4 0V6Z"/>
+            </svg>
+            <span>Secured private channel with dedicated endpoint generation.</span>
+          </div>
         </article>
 
-        <aside class="story-panel">
-          <div class="story-top"><span>A THOUGHTFUL LITTLE DETAIL</span><span>01 — 03</span></div>
-          <div class="bell-art">
-            <div class="art-orbit orbit-a"></div><div class="art-orbit orbit-b"></div>
-            <div class="art-bell"><svg viewBox="0 0 48 48"><path d="M24 6.5c-7 0-11.5 5.1-11.5 12.1v7.1l-4.1 6.1h31.2l-4.1-6.1v-7.1C35.5 11.6 31 6.5 24 6.5Z"/><path d="M19.5 36.2a4.8 4.8 0 0 0 9 0"/></svg></div>
-            <span class="art-star star-a">✳</span><span class="art-star star-b">✦</span>
+        <aside class="showcase-card">
+          <div class="showcase-top">
+            <span>HARMONIC ARCHITECTURE</span>
+            <span class="mono-tag">01 // 03</span>
           </div>
-          <div class="story-steps">
-            <div><b>01</b><span>A guest needs a hand</span></div>
-            <div><b>02</b><span>One tap sends a signal</span></div>
-            <div><b>03</b><span>Your team is on the way</span></div>
+          <div class="showcase-visual">
+            <div class="visual-ring ring-1"></div>
+            <div class="visual-ring ring-2"></div>
+            <div class="bell-emblem">
+              <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M24 6.5c-7 0-11.5 5.1-11.5 12.1v7.1l-4.1 6.1h31.2l-4.1-6.1v-7.1C35.5 11.6 31 6.5 24 6.5Z"/>
+                <path d="M19.5 36.2a4.8 4.8 0 0 0 9 0"/>
+              </svg>
+            </div>
+            <span class="sparkle spark-1">✦</span>
+            <span class="sparkle spark-2">✳</span>
           </div>
-          <p class="story-quote">“Good things begin with a warm hello.”</p>
+          <div class="timeline-steps">
+            <div class="step-item">
+              <span class="step-num">01</span>
+              <p>Guest taps the counter kiosk</p>
+            </div>
+            <div class="step-item">
+              <span class="step-num">02</span>
+              <p>Signal broadcasts over encrypted SSE</p>
+            </div>
+            <div class="step-item">
+              <span class="step-num">03</span>
+              <p>Handset chimes & vibrates instantly</p>
+            </div>
+          </div>
+          <p class="showcase-quote">“Hospitality is making your guests feel seen before they even speak.”</p>
         </aside>
-      </section>
-      <section class="quiet-how"><span>HOW IT WORKS</span><p>Choose your devices. Connect once. Then guests can call you with one tap.</p></section>
-      <footer class="footer"><span>CALL BELL · A WARMER WAY TO SAY HELLO</span><span>MADE BY <a class="creator-link" href="https://www.instagram.com/miidhunee/" target="_blank" rel="noopener noreferrer">Mithuney!!</a></span></footer>
+      </div>
+
+      <footer class="app-footer">
+        <span class="footer-left">CALL BELL · REFINED HOSPITALITY SYSTEMS</span>
+        <span class="footer-right">Made by <a class="creator-link" href="https://www.instagram.com/miidhunee/" target="_blank" rel="noopener noreferrer">miidhuneey!!</a></span>
+      </footer>
     </section>
 
-    <!-- PHONE CONNECTION -->
+    <!-- ================= 02. PHONE CONNECTION VIEW ================= -->
     <section class="view connect-view" id="connect-view" hidden>
-      <header class="inner-header">
-        <button class="back-link" id="back-setup" type="button">← <span>Back</span></button>
-        <div class="mini-brand">CALL <b>BELL</b></div>
-      </header>
-      <div class="connect-content">
-        <p class="eyebrow"><span></span> RECEIVER SETUP</p>
-        <h1>Keep the<br><em>signal close.</em></h1>
-        <p class="hero-description">Enter the shop code from your counter tablet. This connects your phone to the right customer bell.</p>
-        <div class="connect-card">
-          <label for="shop-code">SHOP CODE FROM YOUR COUNTER</label>
-          <div class="code-entry-row">
-            <input id="shop-code" type="text" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="Paste your shop code">
-            <button class="camera-button" id="start-scan" type="button" aria-label="Scan shop QR code"><span>▣</span><small>SCAN</small></button>
-          </div>
-          <div class="scan-panel" id="scan-panel" hidden>
-            <video id="scan-video" autoplay muted playsinline></video>
-            <div class="scan-caption"><span>Point your camera at the QR code on the tablet</span><button id="stop-scan" type="button">CLOSE</button></div>
-          </div>
-          <button class="primary-button full" id="join-shop" type="button">Connect & open ntfy app <span>↗</span></button>
-          <p class="microcopy" id="scan-hint">Scan the QR on your tablet, or paste the shop code manually. The code is copied automatically after a successful scan.</p>
-        </div>
-        <div class="connect-result" id="connect-result" hidden>
-          <div class="result-heading"><span class="live-dot"></span><div><b>Your notification channel</b><small>Subscribe to this exact topic in ntfy</small></div></div>
-          <div class="topic-line"><code id="phone-topic"></code><button id="copy-phone-topic" type="button">COPY</button></div>
-          <div class="instruction-list">
-            <div><span>1</span><p>Install <b>ntfy</b> on this phone from the Play Store or App Store.</p></div>
-            <div><span>2</span><p>Open ntfy, tap <b>+</b>, and subscribe to the topic shown above on <b>ntfy.sh</b>.</p></div>
-            <div><span>3</span><p>Allow notifications. In Android notification settings, enable sound, vibration and high importance for ntfy.</p></div>
-          </div>
-          <button class="secondary-button full" id="open-ntfy" type="button">Open in ntfy app <span>↗</span></button>
-          <button class="text-button" id="go-receiver" type="button">I have subscribed — open receiver dashboard</button>
-          <p class="microcopy">The ntfy app receives alerts when this page is closed. Keep the dashboard open only if you also want the extra in-page chime.</p>
-        </div>
-      </div>
-      <footer class="footer"><span>YOUR PERSONAL CALL LINE</span><span>CALL BELL · 02</span></footer>
-    </section>
-
-    <!-- RECEIVER DASHBOARD -->
-    <section class="view receiver-view" id="receiver-view" hidden>
-      <header class="dashboard-header">
-        <div class="brand"><span class="brand-mark"><svg viewBox="0 0 32 32"><path d="M16 4.8a8 8 0 0 0-8 8v5.1l-2.2 3.2h20.4L24 17.9v-5.1a8 8 0 0 0-8-8Z"/><path d="M13 24a3 3 0 0 0 6 0"/></svg></span><span><b>CALL BELL</b><small>Receiver dashboard</small></span></div>
-        <span class="connection-status" id="receiver-status"><i></i> Connecting</span>
-      </header>
-      <div class="receiver-main">
-        <div class="receiver-intro"><p class="eyebrow"><span></span> YOUR SHOP LINE</p><h1>Stay close<br>to the <em>counter.</em></h1><p>When a guest calls, you’ll hear it here — and through ntfy when the app is in the background.</p></div>
-        <div class="receiver-controls">
-          <div class="control-card">
-            <span class="control-icon">♫</span><div><b>Sound & vibration</b><small id="alarm-state">Not tested on this phone yet</small></div>
-            <button class="small-action" id="test-alarm" type="button">TEST</button>
-          </div>
-          <div class="control-card">
-            <span class="control-icon">⌁</span><div><b>Notification delivery</b><small id="push-state">Send a test from the counter</small></div>
-            <button class="small-action" id="test-push" type="button">PING</button>
-          </div>
-          <div class="topic-card"><span>YOUR SHOP TOPIC</span><code id="receiver-topic"></code><button id="copy-receiver-topic" type="button">COPY TOPIC</button></div>
-        </div>
-      </div>
-      <div class="receiver-bottom"><span class="stream-indicator"><i></i><span id="stream-label">Listening while this page is open</span></span><span class="creator-credit">MADE BY <a class="creator-link" href="https://www.instagram.com/miidhunee/" target="_blank" rel="noopener noreferrer">Mithuney!!</a></span><button class="text-button" id="receiver-settings" type="button">Settings</button></div>
-    </section>
-
-    <!-- FULLSCREEN CUSTOMER KIOSK -->
-    <section class="view kiosk-view" id="kiosk-view" hidden>
-      <header class="kiosk-header">
-        <div class="kiosk-brand"><span class="kiosk-brand-mark"><svg viewBox="0 0 32 32"><path d="M16 4.8a8 8 0 0 0-8 8v5.1l-2.2 3.2h20.4L24 17.9v-5.1a8 8 0 0 0-8-8Z"/><path d="M13 24a3 3 0 0 0 6 0"/></svg></span><span>WELCOME</span></div>
-        <button class="kiosk-settings" id="kiosk-settings" type="button" aria-label="Settings">☰</button>
-      </header>
-      <main class="kiosk-center">
-        <div class="kiosk-copy">
-          <p class="kiosk-overline"><span></span> A LITTLE MOMENT OF CARE</p>
-          <h1>Can I help<br><em>you?</em></h1>
-          <p>I’m just nearby. Tap once, and I’ll be right there.</p>
-        </div>
-        <button class="guest-button" id="guest-button" type="button">
-          <span class="guest-ripple ripple-one"></span><span class="guest-ripple ripple-two"></span>
-          <span class="guest-bell"><svg viewBox="0 0 48 48"><path d="M24 6.5c-7 0-11.5 5.1-11.5 12.1v7.1l-4.1 6.1h31.2l-4.1-6.1v-7.1C35.5 11.6 31 6.5 24 6.5Z"/><path d="M19.5 36.2a4.8 4.8 0 0 0 9 0"/></svg></span>
-          <span class="guest-label">Tap to call me</span>
-          <span class="guest-hint">ONE LITTLE TAP · I’LL BE RIGHT THERE</span>
+      <header class="app-header header-inner">
+        <button class="btn-text-back" id="back-setup" type="button">
+          <span class="back-arrow">←</span>
+          <span>Back to Setup</span>
         </button>
-      </main>
-      <footer class="kiosk-footer"><span><i></i> I’M NEARBY · JUST ONE TAP AWAY</span><span>THANK YOU FOR VISITING · MADE BY <a class="creator-link" href="https://www.instagram.com/miidhunee/" target="_blank" rel="noopener noreferrer">Mithuney!!</a></span></footer>
-      <div class="thanks-overlay" id="thanks-overlay" hidden>
-        <div class="thanks-card">
-          <div class="walker-scene" aria-hidden="true">
-            <span class="walker-shadow"></span>
-            <svg class="walker" viewBox="0 0 150 150">
-              <ellipse cx="76" cy="137" rx="34" ry="7" fill="#d8ceb9"/>
-              <path class="walker-leg leg-back" d="M69 88 C62 103 55 111 47 121 L35 128 C31 132 34 137 40 137 L62 135 C68 129 78 112 84 99Z" fill="#315b45"/>
-              <path class="walker-leg leg-front" d="M82 88 C87 104 92 115 100 124 L112 128 C119 131 116 137 109 138 L88 136 C79 129 68 112 67 97Z" fill="#1d4935"/>
-              <path d="M54 50 C57 41 91 39 99 53 L103 91 C94 101 59 102 48 91Z" fill="#c9a96e"/>
-              <path d="M57 53 C64 43 89 44 96 55 L94 87 C84 96 62 94 54 86Z" fill="#e5d1a6"/>
-              <path class="walker-arm arm-back" d="M54 58 C43 67 37 78 34 91 L29 100 C25 105 30 109 35 105 L44 97 C53 87 62 76 67 67Z" fill="#d9b97c"/>
-              <path class="walker-arm arm-front" d="M95 58 C108 65 115 77 118 88 L126 96 C131 100 127 106 121 103 L109 96 C99 88 91 76 87 67Z" fill="#e6c990"/>
-              <circle cx="77" cy="31" r="17" fill="#c98f69"/>
-              <path d="M60 29 C61 11 91 7 96 27 C87 20 75 18 62 27Z" fill="#3d332b"/>
-              <path d="M67 34 Q77 40 86 33" fill="none" stroke="#85553f" stroke-width="1.5" stroke-linecap="round"/>
-              <path d="M62 52 Q77 61 95 52" fill="none" stroke="#fff6df" stroke-width="2" opacity=".7"/>
+        <div class="brand-mini">
+          <span class="brand-symbol sm">
+            <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M16 4.8a8 8 0 0 0-8 8v5.1l-2.2 3.2h20.4L24 17.9v-5.1a8 8 0 0 0-8-8Z"/>
+              <path d="M13 24a3 3 0 0 0 6 0"/>
             </svg>
-            <span class="walker-spark spark-left">✦</span><span class="walker-spark spark-right">✧</span>
+          </span>
+          <b>CALL BELL</b>
+        </div>
+      </header>
+
+      <div class="connect-container">
+        <div class="badge-tag">HANDSET PAIRING</div>
+        <h1>Link with your<br><em>counter tablet.</em></h1>
+        <p class="hero-subtitle">Input your shop code or scan the tablet’s screen to initialize receiver synchronization.</p>
+
+        <div class="form-card">
+          <label class="input-label" for="shop-code">COUNTER SHOP CODE</label>
+          <div class="code-input-row">
+            <input id="shop-code" type="text" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="e.g. cb-a8f43b...">
+            <button class="btn-scan" id="start-scan" type="button" aria-label="Scan QR Code with camera">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"/>
+                <line x1="7" y1="12" x2="17" y2="12"/>
+              </svg>
+              <span>SCAN</span>
+            </button>
           </div>
-          <p class="thanks-overline">MESSAGE RECEIVED</p>
-          <h2>I’m coming!<br><em>I’ll be right there.</em></h2>
-          <p class="thanks-copy">Your call came through. I’m on my way — thank you for waiting.</p>
-          <div class="countdown"><div class="countdown-track"><span id="countdown-bar"></span></div><div class="countdown-label"><span id="countdown-text">You can call again in 30 seconds</span><b id="countdown-number">30</b></div></div>
-          <div class="thanks-foot">THANK YOU FOR YOUR PATIENCE</div>
+
+          <!-- Camera Live Scanner -->
+          <div class="scanner-frame" id="scan-panel" hidden>
+            <div class="video-wrapper">
+              <video id="scan-video" autoplay muted playsinline></video>
+              <div class="reticle">
+                <span class="corner tl"></span><span class="corner tr"></span>
+                <span class="corner bl"></span><span class="corner br"></span>
+                <div class="scan-laser"></div>
+              </div>
+            </div>
+            <div class="scanner-ctrl">
+              <span id="scan-hint">Align the tablet QR code inside the viewfinder</span>
+              <button class="btn-sm-close" id="stop-scan" type="button">Close Camera</button>
+            </div>
+          </div>
+
+          <button class="btn-primary full-width" id="join-shop" type="button">
+            <span>Pair Handset & Set Topic</span>
+            <span class="btn-arrow">→</span>
+          </button>
+        </div>
+
+        <div class="paired-card" id="connect-result" hidden>
+          <div class="paired-header">
+            <span class="pulse-dot active"></span>
+            <div>
+              <strong>Paired Channel Endpoint</strong>
+              <small>ntfy topic active & ready for push delivery</small>
+            </div>
+          </div>
+
+          <div class="topic-chip">
+            <code class="mono-text" id="phone-topic"></code>
+            <button class="btn-icon-copy" id="copy-phone-topic" type="button" aria-label="Copy topic">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+              </svg>
+              <span>COPY</span>
+            </button>
+          </div>
+
+          <div class="onboarding-guide">
+            <div class="guide-item">
+              <span class="guide-badge">1</span>
+              <p>Install <b>ntfy</b> on your phone from the Google Play Store or Apple App Store.</p>
+            </div>
+            <div class="guide-item">
+              <span class="guide-badge">2</span>
+              <p>Open ntfy, tap <b>+</b>, paste your topic above, and enable priority alerts.</p>
+            </div>
+            <div class="guide-item">
+              <span class="guide-badge">3</span>
+              <p>Under device sound settings, turn off battery optimization for ntfy to ensure uninterrupted delivery.</p>
+            </div>
+          </div>
+
+          <div class="paired-actions">
+            <button class="btn-secondary full-width" id="open-ntfy" type="button">
+              <span>Launch in ntfy Application</span>
+              <span>↗</span>
+            </button>
+            <button class="btn-text-action" id="go-receiver" type="button">
+              Proceed to Receiver Dashboard →
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <footer class="app-footer">
+        <span class="footer-left">ENCRYPTED HANDSET LINK</span>
+        <span class="footer-right">Made by <a class="creator-link" href="https://www.instagram.com/miidhunee/" target="_blank" rel="noopener noreferrer">miidhuneey!!</a></span>
+      </footer>
+    </section>
+
+    <!-- ================= 03. RECEIVER DASHBOARD VIEW ================= -->
+    <section class="view receiver-view" id="receiver-view" hidden>
+      <header class="receiver-header">
+        <div class="brand">
+          <span class="brand-symbol">
+            <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M16 4.8a8 8 0 0 0-8 8v5.1l-2.2 3.2h20.4L24 17.9v-5.1a8 8 0 0 0-8-8Z"/>
+              <path d="M13 24a3 3 0 0 0 6 0"/>
+            </svg>
+          </span>
+          <div class="brand-text">
+            <b>CALL BELL</b>
+            <small>Handset Console</small>
+          </div>
+        </div>
+
+        <div class="receiver-header-actions">
+          <div class="status-indicator" id="receiver-status">
+            <i></i>
+            <span>Connecting...</span>
+          </div>
+          <!-- Perfectly centered & aligned 3-line hamburger menu -->
+          <button class="menu-btn" id="receiver-settings" type="button" aria-label="Open settings menu">
+            <span class="menu-bar"></span>
+            <span class="menu-bar"></span>
+            <span class="menu-bar"></span>
+          </button>
+        </div>
+      </header>
+
+      <div class="receiver-content">
+        <div class="hero-block">
+          <div class="badge-tag">ACTIVE MONITORING</div>
+          <h1>Listening for<br><em>counter rings.</em></h1>
+          <p class="hero-subtitle">Real-time SSE stream connected. When a guest presses the tablet bell, your handset sounds immediately.</p>
+        </div>
+
+        <!-- Compact Connection Row with Tiny QR Code beside code -->
+        <div class="compact-code-card">
+          <div class="compact-code-main">
+            <span class="card-eyebrow">ACTIVE SHOP CODE</span>
+            <div class="compact-code-display">
+              <code class="mono-text" id="receiver-topic"></code>
+              <button class="btn-mini-copy" id="copy-receiver-topic" type="button" aria-label="Copy topic">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                </svg>
+                <span>COPY</span>
+              </button>
+            </div>
+          </div>
+          <!-- Tiny QR Code as requested (approx 52px) -->
+          <div class="tiny-qr-container" id="tiny-qr-box" title="Tap to preview enlarged QR">
+            <img class="tiny-qr-img" id="tiny-qr" alt="Shop QR" width="52" height="52" src="">
+            <span class="tiny-qr-label">QR CODE</span>
+          </div>
+        </div>
+
+        <div class="diagnostics-grid">
+          <div class="diag-card">
+            <div class="diag-icon-box">
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8">
+                <path d="M11 5L6 9H2v6h4l5 4V5z"/>
+                <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/>
+              </svg>
+            </div>
+            <div class="diag-details">
+              <strong>Audio & Haptic Feedback</strong>
+              <small id="alarm-state">Ready for local chime test</small>
+            </div>
+            <button class="btn-action-pill" id="test-alarm" type="button">TEST CHIME</button>
+          </div>
+
+          <div class="diag-card">
+            <div class="diag-icon-box">
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8">
+                <path d="M22 17H2a3 3 0 0 0 3-3V9a7 7 0 0 1 14 0v5a3 3 0 0 0 3 3zm-8.27 4a2 2 0 0 1-3.46 0"/>
+              </svg>
+            </div>
+            <div class="diag-details">
+              <strong>Remote Push Pipeline</strong>
+              <small id="push-state">Verify end-to-end delivery</small>
+            </div>
+            <button class="btn-action-pill" id="test-push" type="button">SEND PING</button>
+          </div>
+        </div>
+      </div>
+
+      <footer class="receiver-footer">
+        <div class="receiver-stream-status">
+          <span class="stream-dot"></span>
+          <span id="stream-label">Listening while this page is open</span>
+        </div>
+        <div class="footer-right">
+          <span>Made by <a class="creator-link" href="https://www.instagram.com/miidhunee/" target="_blank" rel="noopener noreferrer">miidhuneey!!</a></span>
+        </div>
+      </footer>
+    </section>
+
+    <!-- ================= 04. FULLSCREEN CUSTOMER KIOSK VIEW ================= -->
+    <section class="view kiosk-view" id="kiosk-view" hidden>
+      <header class="kiosk-topbar">
+        <div class="kiosk-brand">
+          <span class="kiosk-symbol">
+            <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M16 4.8a8 8 0 0 0-8 8v5.1l-2.2 3.2h20.4L24 17.9v-5.1a8 8 0 0 0-8-8Z"/>
+              <path d="M13 24a3 3 0 0 0 6 0"/>
+            </svg>
+          </span>
+          <div class="kiosk-brand-copy">
+            <b>CALL BELL</b>
+            <small>COUNTER ASSISTANCE</small>
+          </div>
+        </div>
+
+        <button class="kiosk-menu-btn" id="kiosk-settings" type="button" aria-label="Open Management Console">
+          <span class="menu-bar"></span>
+          <span class="menu-bar"></span>
+          <span class="menu-bar"></span>
+        </button>
+      </header>
+
+      <main class="kiosk-stage">
+        <div class="kiosk-prompt">
+          <div class="kiosk-badge">CONCIERGE ON CALL</div>
+          <h1 class="kiosk-headline">Need a little<br><em>help?</em></h1>
+          <p class="kiosk-subhead">One tap is all it takes. I'll be right with you.</p>
+        </div>
+
+        <!-- Super Prominent Call Bell Button with Breathing Ring Animations -->
+        <div class="kiosk-button-wrap">
+          <div class="aura-wave wave-1" aria-hidden="true"></div>
+          <div class="aura-wave wave-2" aria-hidden="true"></div>
+          <div class="aura-wave wave-3" aria-hidden="true"></div>
+
+          <button class="kiosk-call-btn" id="guest-button" type="button" aria-label="Tap to call shopkeeper">
+            <div class="btn-inner-depth">
+              <div class="bell-glow-icon">
+                <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M32 9c-9.5 0-16 7-16 16.5v9.8L10 44h44l-6-8.7v-9.8C48 16 41.5 9 32 9Z"/>
+                  <path d="M26 49.5a6 6 0 0 0 12 0"/>
+                  <path d="M32 4v4" stroke-width="2.5"/>
+                  <circle cx="32" cy="3" r="1.5" fill="currentColor"/>
+                </svg>
+              </div>
+              <span class="btn-title-text">TAP TO CALL</span>
+              <span class="btn-subtitle-text">GUEST ASSISTANCE</span>
+            </div>
+          </button>
+        </div>
+      </main>
+
+      <footer class="kiosk-bottom-bar">
+        <div class="kiosk-presence">
+          <span class="presence-dot"></span>
+          <span>STAFF ON SITE · READY TO ASSIST</span>
+        </div>
+        <div class="kiosk-credits">
+          <span>Made by <a class="creator-link" href="https://www.instagram.com/miidhunee/" target="_blank" rel="noopener noreferrer">miidhuneey!!</a></span>
+        </div>
+      </footer>
+
+      <!-- ================= POPUP: CONFIRMATION MODAL WITH 30S COOLDOWN ================= -->
+      <!-- Walking animation completely removed. Premium ringing bell & audio waves with independent X button -->
+      <div class="modal-scrim" id="thanks-overlay" hidden role="dialog" aria-modal="true" aria-labelledby="thanks-title">
+        <div class="confirm-modal-card">
+          <!-- Independent Close X button: closes modal immediately without stopping cooldown -->
+          <button class="modal-x-btn" id="thanks-close-btn" type="button" aria-label="Dismiss notification dialog">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18"/>
+              <line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          </button>
+
+          <div class="confirm-anim-stage">
+            <div class="sound-wave wave-l"></div>
+            <div class="sound-wave wave-r"></div>
+            <div class="confirm-bell-box">
+              <svg class="swinging-bell" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M32 9c-9.5 0-16 7-16 16.5v9.8L10 44h44l-6-8.7v-9.8C48 16 41.5 9 32 9Z"/>
+                <path d="M26 49.5a6 6 0 0 0 12 0"/>
+                <path d="M32 4v4" stroke-width="2.5"/>
+              </svg>
+            </div>
+          </div>
+
+          <div class="badge-tag green">REQUEST DELIVERED</div>
+          <h2 id="thanks-title" class="confirm-headline">I'm coming!</h2>
+          <p class="confirm-subhead">Your request has been received. I'll be right there.</p>
+
+          <div class="cooldown-tracker">
+            <div class="tracker-bar">
+              <div class="tracker-fill" id="countdown-bar"></div>
+            </div>
+            <div class="tracker-info">
+              <span id="countdown-text">Next call available in</span>
+              <strong class="tracker-counter"><span id="countdown-number">30</span>s</strong>
+            </div>
+          </div>
         </div>
       </div>
     </section>
+
   </main>
 
-  <!-- SETTINGS DRAWER -->
-  <div class="modal-backdrop" id="settings-modal" hidden>
-    <section class="settings-modal" role="dialog" aria-modal="true" aria-labelledby="settings-title">
-      <div class="modal-head"><div><p class="eyebrow"><span></span> DEVICE SETTINGS</p><h2 id="settings-title">Your counter.</h2></div><button id="close-modal" class="modal-close" type="button" aria-label="Close">×</button></div>
-      <div class="settings-topic"><span>SHOP CODE — SCAN THIS WITH YOUR PHONE</span><div class="settings-qr-wrap"><img id="shop-qr" alt="QR code for this shop" width="176" height="176"></div><code id="settings-code"></code><button id="copy-settings-code" type="button">COPY SHOP CODE</button></div>
-      <div class="modal-actions"><button class="primary-button full" id="fullscreen-button" type="button">Enter fullscreen <span>⛶</span></button><button class="secondary-button full" id="install-app" type="button">Install Call Bell app <span>↓</span></button><button class="secondary-button full" id="settings-test" type="button">Send a test notification <span>→</span></button><button class="text-button" id="reset-device" type="button">Reset this device setup</button></div>
-      <p class="microcopy">Scan the QR code from your phone to pair instantly. Install Call Bell from your browser menu if the install prompt is unavailable.</p>
-      <div class="drawer-credit"><span>HELP & SUPPORT</span><a href="https://www.instagram.com/miidhunee/" target="_blank" rel="noopener noreferrer">Mithuney!!</a><small>Creator of Call Bell</small></div>
-    </section>
+  <!-- ================= DRAWER / SETTINGS MODAL ================= -->
+  <div class="modal-scrim" id="settings-modal" hidden role="dialog" aria-modal="true" aria-labelledby="settings-title">
+    <div class="settings-drawer-card">
+      <div class="drawer-header">
+        <div>
+          <div class="badge-tag">DEVICE CONSOLE</div>
+          <h2 id="settings-title">Configuration</h2>
+        </div>
+        <button class="drawer-close-btn" id="close-modal" type="button" aria-label="Close settings">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="drawer-body">
+        <div class="drawer-qr-section">
+          <span class="card-eyebrow">SHOP PAIRING CODE & QR</span>
+          <div class="drawer-qr-frame">
+            <img id="shop-qr" alt="Scan QR to pair devices" width="160" height="160" src="">
+          </div>
+          <div class="drawer-code-chip">
+            <code class="mono-text" id="settings-code"></code>
+            <button class="btn-mini-copy" id="copy-settings-code" type="button">
+              <span>COPY</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="drawer-menu-list">
+          <button class="drawer-action-btn" id="fullscreen-button" type="button">
+            <div class="action-icon">⛶</div>
+            <div class="action-desc">
+              <strong>Toggle Fullscreen Kiosk</strong>
+              <small>Lock screen into dedicated display view</small>
+            </div>
+            <span class="action-arrow">→</span>
+          </button>
+
+          <button class="drawer-action-btn" id="install-app" type="button">
+            <div class="action-icon">↓</div>
+            <div class="action-desc">
+              <strong>Install Application</strong>
+              <small>Add Call Bell to Home Screen or Desktop</small>
+            </div>
+            <span class="action-arrow">→</span>
+          </button>
+
+          <button class="drawer-action-btn" id="settings-test" type="button">
+            <div class="action-icon">⌁</div>
+            <div class="action-desc">
+              <strong>Send Test Alert</strong>
+              <small>Verify ntfy receiver delivery right now</small>
+            </div>
+            <span class="action-arrow">→</span>
+          </button>
+
+          <button class="drawer-action-btn danger" id="reset-device" type="button">
+            <div class="action-icon">↺</div>
+            <div class="action-desc">
+              <strong>Reset Device Setup</strong>
+              <small>Clear saved keys and role preferences</small>
+            </div>
+            <span class="action-arrow">→</span>
+          </button>
+        </div>
+
+        <div class="drawer-creator-box">
+          <div class="badge-tag">HELP & SUPPORT</div>
+          <p>Need support or custom integrations for your store?</p>
+          <div class="creator-stamp">
+            Made by <a class="creator-link" href="https://www.instagram.com/miidhunee/" target="_blank" rel="noopener noreferrer">miidhuneey!!</a>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 
-  <!-- IN-PAGE PHONE ALARM -->
-  <div class="alarm-overlay" id="alarm-overlay" hidden role="alertdialog" aria-modal="true" aria-labelledby="alarm-title">
-    <div class="alarm-card"><div class="alarm-mark">♬</div><p class="eyebrow">CALL BELL ALERT</p><h2 id="alarm-title">Someone is<br><em>calling.</em></h2><p id="alarm-time">Someone is waiting for you.</p><button id="stop-alarm" class="primary-button full" type="button">I’m coming <span>→</span></button></div>
+  <!-- ================= IN-PAGE PHONE ALARM MODAL ================= -->
+  <div class="modal-scrim" id="alarm-overlay" hidden role="alertdialog" aria-modal="true" aria-labelledby="alarm-title">
+    <div class="alarm-incoming-card">
+      <div class="alarm-bell-icon">
+        <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M32 9c-9.5 0-16 7-16 16.5v9.8L10 44h44l-6-8.7v-9.8C48 16 41.5 9 32 9Z"/>
+          <path d="M26 49.5a6 6 0 0 0 12 0"/>
+        </svg>
+      </div>
+      <div class="badge-tag alert">INCOMING GUEST CALL</div>
+      <h2 id="alarm-title">Someone is<br><em>calling.</em></h2>
+      <p id="alarm-time">Customer is waiting at the counter right now.</p>
+      <button class="btn-primary full-width" id="stop-alarm" type="button">
+        <span>I’m Coming</span>
+        <span>→</span>
+      </button>
+    </div>
   </div>
-  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <!-- Toast system -->
+  <div class="app-toast" id="toast" role="status" aria-live="polite"></div>
+
   <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
-  <script src="./app.js?v=5"></script>
+  <script src="./app.js?v=6"></script>
 </body>
 </html>
