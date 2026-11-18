@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#173d30">
-  <meta name="description" content="A simple, polished way for guests to call your team.">
+  <meta name="description" content="A thoughtful one-tap way to let me know you need a hand.">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Call Bell">
@@ -14,7 +14,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,500;0,600;1,500;1,600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="./styles.css?v=4">
+  <link rel="stylesheet" href="./styles.css?v=5">
   <title>Call Bell</title>
 </head>
 <body>
@@ -28,20 +28,20 @@
           <span class="brand-mark"><svg viewBox="0 0 32 32"><path d="M16 4.8a8 8 0 0 0-8 8v5.1l-2.2 3.2h20.4L24 17.9v-5.1a8 8 0 0 0-8-8Z"/><path d="M13 24a3 3 0 0 0 6 0"/></svg></span>
           <span><b>CALL BELL</b><small>A little help, right when you need it</small></span>
         </a>
-        <span class="top-pill"><i></i> TWO-DEVICE SERVICE</span>
+        <span class="top-pill"><i></i> HERE WHEN YOU NEED ME</span>
       </header>
 
       <section class="hero-copy">
-        <p class="eyebrow"><span></span> MADE FOR THE MOMENTS THAT MATTER</p>
-        <h1>Good service<br>starts with <em>hello.</em></h1>
-        <p class="hero-description">A guest taps the counter. Your team gets the message. Simple, thoughtful service — without anyone having to wait and wonder.</p>
+        <p class="eyebrow"><span></span> A SMALL TOUCH OF GOOD SERVICE</p>
+        <h1>A warm welcome<br>starts with <em>hello.</em></h1>
+        <p class="hero-description">Need a hand? Just one little tap lets me know. I’ll be right there to help — so you can relax and enjoy your visit.</p>
       </section>
 
       <section class="setup-grid">
         <article class="setup-panel">
           <div class="panel-index">01 <span>·</span> CHOOSE THIS DEVICE</div>
-          <h2>Where will<br>this device live?</h2>
-          <p class="panel-copy">Set up the tablet at your counter, then connect the phone you carry.</p>
+          <h2>Let’s get<br>connected.</h2>
+          <p class="panel-copy">One device for your guests. One phone for you. A simple little connection.</p>
           <button class="device-choice" id="setup-counter" type="button">
             <span class="choice-icon"><svg viewBox="0 0 24 24"><rect x="2.5" y="3.5" width="19" height="14" rx="2"/><path d="M8 21h8m-4-3.5V21"/></svg></span>
             <span class="choice-copy"><b>This is the customer tablet</b><small>Show the full-screen call button</small></span>
@@ -52,11 +52,11 @@
             <span class="choice-copy"><b>This is my phone</b><small>Get an alert when someone calls</small></span>
             <span class="choice-arrow">↗</span>
           </button>
-          <div class="privacy-note"><span>✳</span> Your counter and phone use the same private topic name. Keep it to yourself.</div>
+          <div class="privacy-note"><span>✳</span> A private shop code keeps your two devices connected.</div>
         </article>
 
         <aside class="story-panel">
-          <div class="story-top"><span>THE LITTLE SERVICE MOMENT</span><span>01 — 03</span></div>
+          <div class="story-top"><span>A THOUGHTFUL LITTLE DETAIL</span><span>01 — 03</span></div>
           <div class="bell-art">
             <div class="art-orbit orbit-a"></div><div class="art-orbit orbit-b"></div>
             <div class="art-bell"><svg viewBox="0 0 48 48"><path d="M24 6.5c-7 0-11.5 5.1-11.5 12.1v7.1l-4.1 6.1h31.2l-4.1-6.1v-7.1C35.5 11.6 31 6.5 24 6.5Z"/><path d="M19.5 36.2a4.8 4.8 0 0 0 9 0"/></svg></div>
@@ -67,17 +67,18 @@
             <div><b>02</b><span>One tap sends a signal</span></div>
             <div><b>03</b><span>Your team is on the way</span></div>
           </div>
-          <p class="story-quote">“Make it easy to feel looked after.”</p>
+          <p class="story-quote">“Good things begin with a warm hello.”</p>
         </aside>
       </section>
-      <footer class="footer"><span>CALL BELL · SERVICE, MADE SIMPLE</span><span>DESIGNED TO FEEL GOOD</span></footer>
+      <section class="quiet-how"><span>HOW IT WORKS</span><p>Choose your devices. Connect once. Then guests can call you with one tap.</p></section>
+      <footer class="footer"><span>CALL BELL · A WARMER WAY TO SAY HELLO</span><span>MADE BY <a class="creator-link" href="https://www.instagram.com/miidhunee/" target="_blank" rel="noopener noreferrer">Mithuney!!</a></span></footer>
     </section>
 
     <!-- PHONE CONNECTION -->
     <section class="view connect-view" id="connect-view" hidden>
       <header class="inner-header">
         <button class="back-link" id="back-setup" type="button">← <span>Back</span></button>
-        <div class="mini-brand">COUNTER <b>BELL</b></div>
+        <div class="mini-brand">CALL <b>BELL</b></div>
       </header>
       <div class="connect-content">
         <p class="eyebrow"><span></span> RECEIVER SETUP</p>
@@ -132,7 +133,7 @@
           <div class="topic-card"><span>YOUR SHOP TOPIC</span><code id="receiver-topic"></code><button id="copy-receiver-topic" type="button">COPY TOPIC</button></div>
         </div>
       </div>
-      <div class="receiver-bottom"><span class="stream-indicator"><i></i><span id="stream-label">Listening while this page is open</span></span><span class="creator-credit">MADE BY MIDUNEY</span><button class="text-button" id="receiver-settings" type="button">Settings</button></div>
+      <div class="receiver-bottom"><span class="stream-indicator"><i></i><span id="stream-label">Listening while this page is open</span></span><span class="creator-credit">MADE BY <a class="creator-link" href="https://www.instagram.com/miidhunee/" target="_blank" rel="noopener noreferrer">Mithuney!!</a></span><button class="text-button" id="receiver-settings" type="button">Settings</button></div>
     </section>
 
     <!-- FULLSCREEN CUSTOMER KIOSK -->
@@ -143,18 +144,18 @@
       </header>
       <main class="kiosk-center">
         <div class="kiosk-copy">
-          <p class="kiosk-overline"><span></span> A LITTLE HELP IS CLOSE BY</p>
-          <h1>Need a little<br><em>help?</em></h1>
-          <p>I’m nearby. Tap once and I’ll be right with you.</p>
+          <p class="kiosk-overline"><span></span> A LITTLE MOMENT OF CARE</p>
+          <h1>Can I help<br><em>you?</em></h1>
+          <p>I’m just nearby. Tap once, and I’ll be right there.</p>
         </div>
         <button class="guest-button" id="guest-button" type="button">
           <span class="guest-ripple ripple-one"></span><span class="guest-ripple ripple-two"></span>
           <span class="guest-bell"><svg viewBox="0 0 48 48"><path d="M24 6.5c-7 0-11.5 5.1-11.5 12.1v7.1l-4.1 6.1h31.2l-4.1-6.1v-7.1C35.5 11.6 31 6.5 24 6.5Z"/><path d="M19.5 36.2a4.8 4.8 0 0 0 9 0"/></svg></span>
           <span class="guest-label">Tap to call me</span>
-          <span class="guest-hint">ONE TAP · I’M NEARBY</span>
+          <span class="guest-hint">ONE LITTLE TAP · I’LL BE RIGHT THERE</span>
         </button>
       </main>
-      <footer class="kiosk-footer"><span><i></i> I’M NEARBY · JUST ONE TAP AWAY</span><span>THANK YOU FOR VISITING · MADE BY MIDUNEY</span></footer>
+      <footer class="kiosk-footer"><span><i></i> I’M NEARBY · JUST ONE TAP AWAY</span><span>THANK YOU FOR VISITING · MADE BY <a class="creator-link" href="https://www.instagram.com/miidhunee/" target="_blank" rel="noopener noreferrer">Mithuney!!</a></span></footer>
       <div class="thanks-overlay" id="thanks-overlay" hidden>
         <div class="thanks-card">
           <div class="walker-scene" aria-hidden="true">
@@ -175,8 +176,8 @@
             <span class="walker-spark spark-left">✦</span><span class="walker-spark spark-right">✧</span>
           </div>
           <p class="thanks-overline">MESSAGE RECEIVED</p>
-          <h2>Wait a moment.<br><em>I’m coming!</em></h2>
-          <p class="thanks-copy">I’ve received your call. I’m nearby and coming to help you now.</p>
+          <h2>I’m coming!<br><em>I’ll be right there.</em></h2>
+          <p class="thanks-copy">Your call came through. I’m on my way — thank you for waiting.</p>
           <div class="countdown"><div class="countdown-track"><span id="countdown-bar"></span></div><div class="countdown-label"><span id="countdown-text">You can call again in 30 seconds</span><b id="countdown-number">30</b></div></div>
           <div class="thanks-foot">THANK YOU FOR YOUR PATIENCE</div>
         </div>
@@ -191,25 +192,16 @@
       <div class="settings-topic"><span>SHOP CODE — SCAN THIS WITH YOUR PHONE</span><div class="settings-qr-wrap"><img id="shop-qr" alt="QR code for this shop" width="176" height="176"></div><code id="settings-code"></code><button id="copy-settings-code" type="button">COPY SHOP CODE</button></div>
       <div class="modal-actions"><button class="primary-button full" id="fullscreen-button" type="button">Enter fullscreen <span>⛶</span></button><button class="secondary-button full" id="install-app" type="button">Install Call Bell app <span>↓</span></button><button class="secondary-button full" id="settings-test" type="button">Send a test notification <span>→</span></button><button class="text-button" id="reset-device" type="button">Reset this device setup</button></div>
       <p class="microcopy">Scan the QR code from your phone to pair instantly. Install Call Bell from your browser menu if the install prompt is unavailable.</p>
-    </section>
-  </div>
-
-  <!-- QR CAMERA SCANNER -->
-  <div class="scanner-backdrop" id="scanner-modal" hidden>
-    <section class="scanner-panel" role="dialog" aria-modal="true" aria-labelledby="scanner-title">
-      <div class="modal-head"><div><p class="eyebrow"><span></span> QUICK CONNECT</p><h2 id="scanner-title">Scan your shop code.</h2></div><button id="close-scanner" class="modal-close" type="button" aria-label="Close">×</button></div>
-      <p class="scanner-help">Point your phone camera at the QR code shown in Call Bell settings on the tablet. The code will be filled in automatically.</p>
-      <div class="camera-stage"><video id="scanner-video" autoplay muted playsinline></video><div class="scan-frame"><i></i></div></div>
-      <p class="scanner-status" id="scanner-status">Starting camera…</p>
-      <button class="secondary-button full" id="scanner-manual" type="button">Enter code manually instead</button>
+      <div class="drawer-credit"><span>HELP & SUPPORT</span><a href="https://www.instagram.com/miidhunee/" target="_blank" rel="noopener noreferrer">Mithuney!!</a><small>Creator of Call Bell</small></div>
     </section>
   </div>
 
   <!-- IN-PAGE PHONE ALARM -->
   <div class="alarm-overlay" id="alarm-overlay" hidden role="alertdialog" aria-modal="true" aria-labelledby="alarm-title">
-    <div class="alarm-card"><div class="alarm-mark">♬</div><p class="eyebrow">CALL BELL ALERT</p><h2 id="alarm-title">Someone is<br><em>calling.</em></h2><p id="alarm-time">A guest is waiting for you.</p><button id="stop-alarm" class="primary-button full" type="button">I’m on my way <span>→</span></button></div>
+    <div class="alarm-card"><div class="alarm-mark">♬</div><p class="eyebrow">CALL BELL ALERT</p><h2 id="alarm-title">Someone is<br><em>calling.</em></h2><p id="alarm-time">Someone is waiting for you.</p><button id="stop-alarm" class="primary-button full" type="button">I’m coming <span>→</span></button></div>
   </div>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
-  <script src="./app.js?v=4"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
+  <script src="./app.js?v=5"></script>
 </body>
 </html>
