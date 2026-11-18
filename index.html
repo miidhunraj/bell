@@ -7,15 +7,15 @@
   <meta name="description" content="A simple, polished way for guests to call your team.">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="Counter Bell">
+  <meta name="apple-mobile-web-app-title" content="Call Bell">
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="icon" href="./icon-192.png" sizes="192x192">
   <link rel="apple-touch-icon" href="./apple-touch-icon.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,500;0,600;1,500;1,600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="./styles.css?v=3">
-  <title>Counter Bell</title>
+  <link rel="stylesheet" href="./styles.css?v=4">
+  <title>Call Bell</title>
 </head>
 <body>
   <div class="ambient ambient-one"></div><div class="ambient ambient-two"></div>
@@ -24,9 +24,9 @@
     <!-- SETUP -->
     <section class="view setup-view" id="setup-view">
       <header class="topbar">
-        <a class="brand" href="#" aria-label="Counter Bell home">
+        <a class="brand" href="#" aria-label="Call Bell home">
           <span class="brand-mark"><svg viewBox="0 0 32 32"><path d="M16 4.8a8 8 0 0 0-8 8v5.1l-2.2 3.2h20.4L24 17.9v-5.1a8 8 0 0 0-8-8Z"/><path d="M13 24a3 3 0 0 0 6 0"/></svg></span>
-          <span><b>COUNTER BELL</b><small>A warmer welcome starts here</small></span>
+          <span><b>CALL BELL</b><small>A little help, right when you need it</small></span>
         </a>
         <span class="top-pill"><i></i> TWO-DEVICE SERVICE</span>
       </header>
@@ -44,12 +44,12 @@
           <p class="panel-copy">Set up the tablet at your counter, then connect the phone you carry.</p>
           <button class="device-choice" id="setup-counter" type="button">
             <span class="choice-icon"><svg viewBox="0 0 24 24"><rect x="2.5" y="3.5" width="19" height="14" rx="2"/><path d="M8 21h8m-4-3.5V21"/></svg></span>
-            <span class="choice-copy"><b>This is the counter tablet</b><small>Show the full-screen guest button</small></span>
+            <span class="choice-copy"><b>This is the customer tablet</b><small>Show the full-screen call button</small></span>
             <span class="choice-arrow">↗</span>
           </button>
           <button class="device-choice" id="setup-phone" type="button">
             <span class="choice-icon phone-choice"><svg viewBox="0 0 24 24"><rect x="7" y="2" width="10" height="20" rx="2.5"/><path d="M11 18.5h2"/></svg></span>
-            <span class="choice-copy"><b>This is my receiving phone</b><small>Get alerts when a guest calls</small></span>
+            <span class="choice-copy"><b>This is my phone</b><small>Get an alert when someone calls</small></span>
             <span class="choice-arrow">↗</span>
           </button>
           <div class="privacy-note"><span>✳</span> Your counter and phone use the same private topic name. Keep it to yourself.</div>
@@ -70,7 +70,7 @@
           <p class="story-quote">“Make it easy to feel looked after.”</p>
         </aside>
       </section>
-      <footer class="footer"><span>COUNTER BELL · SERVICE, MADE SIMPLE</span><span>DESIGNED TO FEEL GOOD</span></footer>
+      <footer class="footer"><span>CALL BELL · SERVICE, MADE SIMPLE</span><span>DESIGNED TO FEEL GOOD</span></footer>
     </section>
 
     <!-- PHONE CONNECTION -->
@@ -85,9 +85,16 @@
         <p class="hero-description">Enter the shop code from your counter tablet. This connects your phone to the right customer bell.</p>
         <div class="connect-card">
           <label for="shop-code">SHOP CODE FROM YOUR COUNTER</label>
-          <input id="shop-code" type="text" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="Paste your shop code">
-          <button class="primary-button full" id="join-shop" type="button">Connect this phone <span>→</span></button>
-          <p class="microcopy">On the counter tablet, open Settings → Copy shop code.</p>
+          <div class="code-entry-row">
+            <input id="shop-code" type="text" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="Paste your shop code">
+            <button class="camera-button" id="start-scan" type="button" aria-label="Scan shop QR code"><span>▣</span><small>SCAN</small></button>
+          </div>
+          <div class="scan-panel" id="scan-panel" hidden>
+            <video id="scan-video" autoplay muted playsinline></video>
+            <div class="scan-caption"><span>Point your camera at the QR code on the tablet</span><button id="stop-scan" type="button">CLOSE</button></div>
+          </div>
+          <button class="primary-button full" id="join-shop" type="button">Connect & open ntfy app <span>↗</span></button>
+          <p class="microcopy" id="scan-hint">Scan the QR on your tablet, or paste the shop code manually. The code is copied automatically after a successful scan.</p>
         </div>
         <div class="connect-result" id="connect-result" hidden>
           <div class="result-heading"><span class="live-dot"></span><div><b>Your notification channel</b><small>Subscribe to this exact topic in ntfy</small></div></div>
@@ -97,18 +104,18 @@
             <div><span>2</span><p>Open ntfy, tap <b>+</b>, and subscribe to the topic shown above on <b>ntfy.sh</b>.</p></div>
             <div><span>3</span><p>Allow notifications. In Android notification settings, enable sound, vibration and high importance for ntfy.</p></div>
           </div>
-          <a class="secondary-button full" id="open-ntfy" href="https://ntfy.sh/app" target="_blank" rel="noopener">Open ntfy setup <span>↗</span></a>
+          <button class="secondary-button full" id="open-ntfy" type="button">Open in ntfy app <span>↗</span></button>
           <button class="text-button" id="go-receiver" type="button">I have subscribed — open receiver dashboard</button>
-          <p class="microcopy">Keep this dashboard open for its extra in-page alarm. ntfy is what alerts you when this page is closed.</p>
+          <p class="microcopy">The ntfy app receives alerts when this page is closed. Keep the dashboard open only if you also want the extra in-page chime.</p>
         </div>
       </div>
-      <footer class="footer"><span>YOUR TEAM, ALWAYS WITH YOU</span><span>COUNTER BELL · 02</span></footer>
+      <footer class="footer"><span>YOUR PERSONAL CALL LINE</span><span>CALL BELL · 02</span></footer>
     </section>
 
     <!-- RECEIVER DASHBOARD -->
     <section class="view receiver-view" id="receiver-view" hidden>
       <header class="dashboard-header">
-        <div class="brand"><span class="brand-mark"><svg viewBox="0 0 32 32"><path d="M16 4.8a8 8 0 0 0-8 8v5.1l-2.2 3.2h20.4L24 17.9v-5.1a8 8 0 0 0-8-8Z"/><path d="M13 24a3 3 0 0 0 6 0"/></svg></span><span><b>COUNTER BELL</b><small>Receiver dashboard</small></span></div>
+        <div class="brand"><span class="brand-mark"><svg viewBox="0 0 32 32"><path d="M16 4.8a8 8 0 0 0-8 8v5.1l-2.2 3.2h20.4L24 17.9v-5.1a8 8 0 0 0-8-8Z"/><path d="M13 24a3 3 0 0 0 6 0"/></svg></span><span><b>CALL BELL</b><small>Receiver dashboard</small></span></div>
         <span class="connection-status" id="receiver-status"><i></i> Connecting</span>
       </header>
       <div class="receiver-main">
@@ -125,35 +132,51 @@
           <div class="topic-card"><span>YOUR SHOP TOPIC</span><code id="receiver-topic"></code><button id="copy-receiver-topic" type="button">COPY TOPIC</button></div>
         </div>
       </div>
-      <div class="receiver-bottom"><span class="stream-indicator"><i></i><span id="stream-label">Listening while this page is open</span></span><button class="text-button" id="receiver-settings" type="button">Settings</button></div>
+      <div class="receiver-bottom"><span class="stream-indicator"><i></i><span id="stream-label">Listening while this page is open</span></span><span class="creator-credit">MADE BY MIDUNEY</span><button class="text-button" id="receiver-settings" type="button">Settings</button></div>
     </section>
 
     <!-- FULLSCREEN CUSTOMER KIOSK -->
     <section class="view kiosk-view" id="kiosk-view" hidden>
       <header class="kiosk-header">
         <div class="kiosk-brand"><span class="kiosk-brand-mark"><svg viewBox="0 0 32 32"><path d="M16 4.8a8 8 0 0 0-8 8v5.1l-2.2 3.2h20.4L24 17.9v-5.1a8 8 0 0 0-8-8Z"/><path d="M13 24a3 3 0 0 0 6 0"/></svg></span><span>WELCOME</span></div>
-        <button class="kiosk-settings" id="kiosk-settings" type="button" aria-label="Settings">•••</button>
+        <button class="kiosk-settings" id="kiosk-settings" type="button" aria-label="Settings">☰</button>
       </header>
       <main class="kiosk-center">
         <div class="kiosk-copy">
-          <p class="kiosk-overline"><span></span> WE’RE HAPPY YOU’RE HERE</p>
+          <p class="kiosk-overline"><span></span> A LITTLE HELP IS CLOSE BY</p>
           <h1>Need a little<br><em>help?</em></h1>
-          <p>Our team is nearby. Tap the button and we’ll come to you.</p>
+          <p>I’m nearby. Tap once and I’ll be right with you.</p>
         </div>
         <button class="guest-button" id="guest-button" type="button">
           <span class="guest-ripple ripple-one"></span><span class="guest-ripple ripple-two"></span>
           <span class="guest-bell"><svg viewBox="0 0 48 48"><path d="M24 6.5c-7 0-11.5 5.1-11.5 12.1v7.1l-4.1 6.1h31.2l-4.1-6.1v-7.1C35.5 11.6 31 6.5 24 6.5Z"/><path d="M19.5 36.2a4.8 4.8 0 0 0 9 0"/></svg></span>
-          <span class="guest-label">Tap to call our team</span>
-          <span class="guest-hint">ONE TAP · WE’LL BE RIGHT THERE</span>
+          <span class="guest-label">Tap to call me</span>
+          <span class="guest-hint">ONE TAP · I’M NEARBY</span>
         </button>
       </main>
-      <footer class="kiosk-footer"><span><i></i> HERE WHEN YOU NEED US</span><span>THANK YOU FOR VISITING</span></footer>
+      <footer class="kiosk-footer"><span><i></i> I’M NEARBY · JUST ONE TAP AWAY</span><span>THANK YOU FOR VISITING · MADE BY MIDUNEY</span></footer>
       <div class="thanks-overlay" id="thanks-overlay" hidden>
         <div class="thanks-card">
-          <div class="thanks-icon">✦</div>
+          <div class="walker-scene" aria-hidden="true">
+            <span class="walker-shadow"></span>
+            <svg class="walker" viewBox="0 0 150 150">
+              <ellipse cx="76" cy="137" rx="34" ry="7" fill="#d8ceb9"/>
+              <path class="walker-leg leg-back" d="M69 88 C62 103 55 111 47 121 L35 128 C31 132 34 137 40 137 L62 135 C68 129 78 112 84 99Z" fill="#315b45"/>
+              <path class="walker-leg leg-front" d="M82 88 C87 104 92 115 100 124 L112 128 C119 131 116 137 109 138 L88 136 C79 129 68 112 67 97Z" fill="#1d4935"/>
+              <path d="M54 50 C57 41 91 39 99 53 L103 91 C94 101 59 102 48 91Z" fill="#c9a96e"/>
+              <path d="M57 53 C64 43 89 44 96 55 L94 87 C84 96 62 94 54 86Z" fill="#e5d1a6"/>
+              <path class="walker-arm arm-back" d="M54 58 C43 67 37 78 34 91 L29 100 C25 105 30 109 35 105 L44 97 C53 87 62 76 67 67Z" fill="#d9b97c"/>
+              <path class="walker-arm arm-front" d="M95 58 C108 65 115 77 118 88 L126 96 C131 100 127 106 121 103 L109 96 C99 88 91 76 87 67Z" fill="#e6c990"/>
+              <circle cx="77" cy="31" r="17" fill="#c98f69"/>
+              <path d="M60 29 C61 11 91 7 96 27 C87 20 75 18 62 27Z" fill="#3d332b"/>
+              <path d="M67 34 Q77 40 86 33" fill="none" stroke="#85553f" stroke-width="1.5" stroke-linecap="round"/>
+              <path d="M62 52 Q77 61 95 52" fill="none" stroke="#fff6df" stroke-width="2" opacity=".7"/>
+            </svg>
+            <span class="walker-spark spark-left">✦</span><span class="walker-spark spark-right">✧</span>
+          </div>
           <p class="thanks-overline">MESSAGE RECEIVED</p>
-          <h2>Lovely.<br><em>We’re on our way.</em></h2>
-          <p class="thanks-copy">Our team has been notified. Please make yourself comfortable — someone will be with you shortly.</p>
+          <h2>Wait a moment.<br><em>I’m coming!</em></h2>
+          <p class="thanks-copy">I’ve received your call. I’m nearby and coming to help you now.</p>
           <div class="countdown"><div class="countdown-track"><span id="countdown-bar"></span></div><div class="countdown-label"><span id="countdown-text">You can call again in 30 seconds</span><b id="countdown-number">30</b></div></div>
           <div class="thanks-foot">THANK YOU FOR YOUR PATIENCE</div>
         </div>
@@ -165,17 +188,28 @@
   <div class="modal-backdrop" id="settings-modal" hidden>
     <section class="settings-modal" role="dialog" aria-modal="true" aria-labelledby="settings-title">
       <div class="modal-head"><div><p class="eyebrow"><span></span> DEVICE SETTINGS</p><h2 id="settings-title">Your counter.</h2></div><button id="close-modal" class="modal-close" type="button" aria-label="Close">×</button></div>
-      <div class="settings-topic"><span>SHOP CODE — SHARE ONLY WITH YOUR PHONE</span><code id="settings-code"></code><button id="copy-settings-code" type="button">COPY SHOP CODE</button></div>
-      <div class="modal-actions"><button class="primary-button full" id="fullscreen-button" type="button">Enter fullscreen <span>⛶</span></button><button class="secondary-button full" id="settings-test" type="button">Send a test notification <span>→</span></button><button class="text-button" id="reset-device" type="button">Reset this device setup</button></div>
-      <p class="microcopy">Fullscreen is started by a tap and may be restricted by your browser. For a fixed shop tablet, use the browser’s Add to Home Screen / Install App option.</p>
+      <div class="settings-topic"><span>SHOP CODE — SCAN THIS WITH YOUR PHONE</span><div class="settings-qr-wrap"><img id="shop-qr" alt="QR code for this shop" width="176" height="176"></div><code id="settings-code"></code><button id="copy-settings-code" type="button">COPY SHOP CODE</button></div>
+      <div class="modal-actions"><button class="primary-button full" id="fullscreen-button" type="button">Enter fullscreen <span>⛶</span></button><button class="secondary-button full" id="install-app" type="button">Install Call Bell app <span>↓</span></button><button class="secondary-button full" id="settings-test" type="button">Send a test notification <span>→</span></button><button class="text-button" id="reset-device" type="button">Reset this device setup</button></div>
+      <p class="microcopy">Scan the QR code from your phone to pair instantly. Install Call Bell from your browser menu if the install prompt is unavailable.</p>
+    </section>
+  </div>
+
+  <!-- QR CAMERA SCANNER -->
+  <div class="scanner-backdrop" id="scanner-modal" hidden>
+    <section class="scanner-panel" role="dialog" aria-modal="true" aria-labelledby="scanner-title">
+      <div class="modal-head"><div><p class="eyebrow"><span></span> QUICK CONNECT</p><h2 id="scanner-title">Scan your shop code.</h2></div><button id="close-scanner" class="modal-close" type="button" aria-label="Close">×</button></div>
+      <p class="scanner-help">Point your phone camera at the QR code shown in Call Bell settings on the tablet. The code will be filled in automatically.</p>
+      <div class="camera-stage"><video id="scanner-video" autoplay muted playsinline></video><div class="scan-frame"><i></i></div></div>
+      <p class="scanner-status" id="scanner-status">Starting camera…</p>
+      <button class="secondary-button full" id="scanner-manual" type="button">Enter code manually instead</button>
     </section>
   </div>
 
   <!-- IN-PAGE PHONE ALARM -->
   <div class="alarm-overlay" id="alarm-overlay" hidden role="alertdialog" aria-modal="true" aria-labelledby="alarm-title">
-    <div class="alarm-card"><div class="alarm-mark">♬</div><p class="eyebrow">COUNTER BELL ALERT</p><h2 id="alarm-title">A guest is<br><em>waiting.</em></h2><p id="alarm-time">Someone has called from the counter.</p><button id="stop-alarm" class="primary-button full" type="button">I’m on my way <span>→</span></button></div>
+    <div class="alarm-card"><div class="alarm-mark">♬</div><p class="eyebrow">CALL BELL ALERT</p><h2 id="alarm-title">Someone is<br><em>calling.</em></h2><p id="alarm-time">A guest is waiting for you.</p><button id="stop-alarm" class="primary-button full" type="button">I’m on my way <span>→</span></button></div>
   </div>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
-  <script src="./app.js?v=3"></script>
+  <script src="./app.js?v=4"></script>
 </body>
 </html>
