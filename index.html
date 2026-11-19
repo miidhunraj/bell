@@ -4,19 +4,19 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#122b22">
-  <meta name="description" content="Call Bell — modern hospitality bell. One tap on the counter, instant ring on your phone.">
+  <meta name="description" content="Hola Brownie Call Bell — One tap on the counter, instant ring on your phone.">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="Call Bell">
+  <meta name="apple-mobile-web-app-title" content="Hola Brownie Bell">
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="icon" href="./icon-192.png" sizes="192x192">
   <link rel="apple-touch-icon" href="./apple-touch-icon.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500;1,600&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="./styles.css?v=6">
-  <title>Call Bell — Hospitality Bell</title>
+  <link rel="stylesheet" href="./styles.css?v=7">
+  <title>Hola Brownie — Counter Bell</title>
 </head>
 <body>
   <!-- Ambient backdrop lighting -->
@@ -36,8 +36,8 @@
             </svg>
           </span>
           <span class="brand-text">
-            <b>CALL BELL</b>
-            <small>Hospitality Edition</small>
+            <b>HOLA BROWNIE</b>
+            <small>Counter Assistance</small>
           </span>
         </a>
         <div class="header-pill">
@@ -47,9 +47,9 @@
       </header>
 
       <div class="hero-block">
-        <div class="badge-tag">HOSPITALITY PROTOCOL · V2.0</div>
-        <h1>Elevate service with<br><em>one quiet touch.</em></h1>
-        <p class="hero-subtitle">Two devices in effortless synchronization. Your counter tablet lets guests call in a tap; your phone sounds the alert immediately.</p>
+        <div class="badge-tag">HOLA BROWNIE COUNTER BELL</div>
+        <h1>Always connected,<br><em>even while away.</em></h1>
+        <p class="hero-subtitle">Step away from the counter with total peace of mind. When a customer taps your tablet, your phone alerts you immediately.</p>
       </div>
 
       <div class="setup-grid">
@@ -116,23 +116,23 @@
           <div class="timeline-steps">
             <div class="step-item">
               <span class="step-num">01</span>
-              <p>Guest taps the counter kiosk</p>
+              <p>Customer taps the counter tablet</p>
             </div>
             <div class="step-item">
               <span class="step-num">02</span>
-              <p>Signal broadcasts over encrypted SSE</p>
+              <p>Instant encrypted signal sent to phone</p>
             </div>
             <div class="step-item">
               <span class="step-num">03</span>
-              <p>Handset chimes & vibrates instantly</p>
+              <p>Handset alarms & vibrates continuously</p>
             </div>
           </div>
-          <p class="showcase-quote">“Hospitality is making your guests feel seen before they even speak.”</p>
+          <p class="showcase-quote">“Step away anytime — your counter alerts your pocket the moment someone arrives.”</p>
         </aside>
       </div>
 
       <footer class="app-footer">
-        <span class="footer-left">CALL BELL · REFINED HOSPITALITY SYSTEMS</span>
+        <span class="footer-left">HOLA BROWNIE · COUNTER ALERT SYSTEM</span>
         <span class="footer-right">Made by <a class="creator-link" href="https://www.instagram.com/miidhunee/" target="_blank" rel="noopener noreferrer">miidhuneey!!</a></span>
       </footer>
     </section>
@@ -281,8 +281,22 @@
       <div class="receiver-content">
         <div class="hero-block">
           <div class="badge-tag">ACTIVE MONITORING</div>
-          <h1>Listening for<br><em>counter rings.</em></h1>
-          <p class="hero-subtitle">Real-time SSE stream connected. When a guest presses the tablet bell, your handset sounds immediately.</p>
+          <h1>Listening for<br><em>counter calls.</em></h1>
+          <p class="hero-subtitle">Real-time SSE stream connected. When a customer taps the tablet bell, your handset sounds and vibrates immediately.</p>
+        </div>
+
+        <!-- Dedicated Handset Alarm Control Bar (Shows during active incoming call) -->
+        <div class="active-alarm-bar" id="active-alarm-bar" hidden>
+          <div class="alarm-bar-info">
+            <span class="alarm-pulsing-icon">🔔</span>
+            <div>
+              <strong>CUSTOMER AT COUNTER!</strong>
+              <small id="alarm-bar-text">Ringing now...</small>
+            </div>
+          </div>
+          <button class="btn-stop-alarm-handset" id="handset-stop-btn" type="button">
+            STOP ALARM
+          </button>
         </div>
 
         <!-- Compact Connection Row with Tiny QR Code beside code -->
@@ -373,9 +387,9 @@
 
       <main class="kiosk-stage">
         <div class="kiosk-prompt">
-          <div class="kiosk-badge">CONCIERGE ON CALL</div>
-          <h1 class="kiosk-headline">Need a little<br><em>help?</em></h1>
-          <p class="kiosk-subhead">One tap is all it takes. I'll be right with you.</p>
+          <div class="kiosk-badge">HOLA BROWNIE · COUNTER CALL</div>
+          <h1 class="kiosk-headline">If I'm not here,<br><em>just tap.</em></h1>
+          <p class="kiosk-subhead">I will be right there with you.</p>
         </div>
 
         <!-- Super Prominent Call Bell Button with Breathing Ring Animations -->
@@ -395,7 +409,7 @@
                 </svg>
               </div>
               <span class="btn-title-text">TAP TO CALL</span>
-              <span class="btn-subtitle-text">GUEST ASSISTANCE</span>
+              <span class="btn-subtitle-text">I'LL BE RIGHT THERE</span>
             </div>
           </button>
         </div>
@@ -404,7 +418,7 @@
       <footer class="kiosk-bottom-bar">
         <div class="kiosk-presence">
           <span class="presence-dot"></span>
-          <span>STAFF ON SITE · READY TO ASSIST</span>
+          <span>STAFF ON SITE · I WILL BE RIGHT THERE</span>
         </div>
         <div class="kiosk-credits">
           <span>Made by <a class="creator-link" href="https://www.instagram.com/miidhunee/" target="_blank" rel="noopener noreferrer">miidhuneey!!</a></span>
@@ -435,9 +449,9 @@
             </div>
           </div>
 
-          <div class="badge-tag green">REQUEST DELIVERED</div>
+          <div class="badge-tag green">ALERT SENT TO STAFF</div>
           <h2 id="thanks-title" class="confirm-headline">I'm coming!</h2>
-          <p class="confirm-subhead">Your request has been received. I'll be right there.</p>
+          <p class="confirm-subhead">Your call has been received. I'll be right there at the counter.</p>
 
           <div class="cooldown-tracker">
             <div class="tracker-bar">
@@ -542,11 +556,11 @@
           <path d="M26 49.5a6 6 0 0 0 12 0"/>
         </svg>
       </div>
-      <div class="badge-tag alert">INCOMING GUEST CALL</div>
-      <h2 id="alarm-title">Someone is<br><em>calling.</em></h2>
-      <p id="alarm-time">Customer is waiting at the counter right now.</p>
-      <button class="btn-primary full-width" id="stop-alarm" type="button">
-        <span>I’m Coming</span>
+      <div class="badge-tag alert">CUSTOMER AT COUNTER</div>
+      <h2 id="alarm-title">Customer is<br><em>calling.</em></h2>
+      <p id="alarm-time">Someone is waiting at the counter right now.</p>
+      <button class="btn-stop-alarm-modal" id="stop-alarm" type="button">
+        <span>STOP ALARM · I’M COMING</span>
         <span>→</span>
       </button>
     </div>
@@ -556,6 +570,6 @@
   <div class="app-toast" id="toast" role="status" aria-live="polite"></div>
 
   <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
-  <script src="./app.js?v=6"></script>
+  <script src="./app.js?v=7"></script>
 </body>
 </html>

@@ -126,10 +126,13 @@ function showScreen(name) {
    ========================================================================== */
 function vibrate(pattern) {
   try {
-    if (typeof navigator.vibrate === "function") {
-      return navigator.vibrate(pattern);
+    if ("vibrate" in navigator && typeof navigator.vibrate === "function") {
+      const res = navigator.vibrate(pattern);
+      return res !== false;
     }
-  } catch {}
+  } catch (err) {
+    console.warn("Vibration error:", err);
+  }
   return false;
 }
 
@@ -199,27 +202,33 @@ function stopAlarm() {
   clearInterval(state.vibrationTimer);
   state.alarmTimer = state.vibrationTimer = null;
   vibrate(0);
-  $("alarm-overlay").hidden = true;
+  if ($("alarm-overlay")) $("alarm-overlay").hidden = true;
+  if ($("active-alarm-bar")) $("active-alarm-bar").hidden = true;
+  toast("Alarm stopped");
 }
 
 function startAlarm(message) {
   if (state.alarmActive) return;
   state.alarmActive = true;
-  $("alarm-time").textContent = message || "Someone is waiting at the counter right now.";
-  $("alarm-overlay").hidden = false;
+  if ($("alarm-time")) $("alarm-time").textContent = message || "Someone is waiting at the counter right now.";
+  if ($("alarm-overlay")) $("alarm-overlay").hidden = false;
+  if ($("active-alarm-bar")) {
+    $("active-alarm-bar").hidden = false;
+    $("alarm-bar-text").textContent = message || "Customer calling!";
+  }
   playChime();
-  vibrate([700, 220, 700, 220, 900]);
+  vibrate([800, 250, 800, 250, 1000]);
   state.alarmTimer = setInterval(() => {
     if (state.alarmActive) playChime();
-  }, 2600);
+  }, 2400);
   state.vibrationTimer = setInterval(() => {
-    if (state.alarmActive) vibrate([700, 220, 700, 220, 900]);
-  }, 3200);
+    if (state.alarmActive) vibrate([800, 250, 800, 250, 1000]);
+  }, 3000);
 
   if ("Notification" in window && Notification.permission === "granted") {
     try {
-      new Notification("Call Bell — Customer Request", {
-        body: message || "A guest is waiting at the counter.",
+      new Notification("Hola Brownie — Customer Waiting", {
+        body: message || "Customer is at the counter right now.",
         icon: "./icon-192.png",
         tag: "call-bell-ring",
         renotify: true
@@ -491,33 +500,51 @@ async function startQrScan() {
   $("scan-hint").textContent = "Opening device camera…";
 
   if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-    $("scan-hint").textContent = "Camera access requires HTTPS and browser permission. Input code manually.";
+    $("scan-hint").textContent = "Camera requires HTTPS. Please type or paste the code.";
     return;
   }
   if (typeof window.jsQR !== "function") {
-    $("scan-hint").textContent = "QR library failed to load. Please enter shop code manually.";
+    $("scan-hint").textContent = "QR scanner module loading... If delayed, enter code manually.";
+    return;
+  }
+
+  // Camera constraints with multiple fallback modes (cross-Android & iOS compatibility)
+  const cameraOptions = [
+    { video: { facingMode: { exact: "environment" } } },
+    { video: { facingMode: "environment" } },
+    { video: { facingMode: "user" } },
+    { video: true }
+  ];
+
+  let stream = null;
+  for (const opt of cameraOptions) {
+    try {
+      stream = await navigator.mediaDevices.getUserMedia(opt);
+      if (stream) break;
+    } catch (e) {
+      // try next fallback option
+    }
+  }
+
+  if (!stream) {
+    panel.hidden = false;
+    $("scan-hint").textContent = "Camera access denied or unavailable. Please enter code manually.";
     return;
   }
 
   try {
-    state.scanStream = await navigator.mediaDevices.getUserMedia({
-      audio: false,
-      video: {
-        facingMode: { ideal: "environment" },
-        width: { ideal: 1280 },
-        height: { ideal: 720 }
-      }
-    });
+    state.scanStream = stream;
     video.srcObject = state.scanStream;
+    video.setAttribute("playsinline", "true");
     await video.play();
-    $("scan-hint").textContent = "Align the tablet QR code inside the viewfinder";
+    $("scan-hint").textContent = "Point camera at the tablet QR code";
 
     state.scanCanvas = document.createElement("canvas");
     state.scanContext = state.scanCanvas.getContext("2d", { willReadFrequently: true });
 
     const scan = () => {
       if (!state.scanStream || panel.hidden) return;
-      if (video.readyState >= 2) {
+      if (video.readyState >= video.HAVE_CURRENT_DATA) {
         const w = video.videoWidth;
         const h = video.videoHeight;
         if (w && h) {
@@ -528,12 +555,13 @@ async function startQrScan() {
           const result = window.jsQR(frame.data, w, h, { inversionAttempts: "attemptBoth" });
           if (result && result.data) {
             const found = cleanCode(result.data);
-            if (found.length >= 8) {
+            if (found.length >= 6) {
               $("shop-code").value = found;
               copyText(found, "Shop code");
+              vibrate(100);
               stopQrScan();
               joinPhone();
-              toast("Code scanned and paired!");
+              toast("Paired with shop code!");
               return;
             }
           }
@@ -544,10 +572,8 @@ async function startQrScan() {
     scan();
   } catch (err) {
     panel.hidden = false;
-    $("scan-hint").textContent = (err.name === "NotAllowedError" || err.name === "PermissionDeniedError")
-      ? "Camera permission denied. Allow camera in browser settings or paste code manually."
-      : "Could not start camera. Enter shop code manually.";
-    console.error("Camera scan error", err);
+    $("scan-hint").textContent = "Camera stream could not start. Please enter code manually.";
+    console.error("Camera playback failed:", err);
   }
 }
 
@@ -640,6 +666,7 @@ function attachEvents() {
   $("settings-test").addEventListener("click", testPush);
   $("reset-device").addEventListener("click", resetDevice);
   $("stop-alarm").addEventListener("click", stopAlarm);
+  if ($("handset-stop-btn")) $("handset-stop-btn").addEventListener("click", stopAlarm);
 
   // Tiny QR preview trigger
   $("tiny-qr-box").addEventListener("click", openSettings);
