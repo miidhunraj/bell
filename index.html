@@ -335,6 +335,23 @@
             <button id="broadcast-notice-btn" type="button">POST TO TABLET</button>
           </div>
         </div>
+
+        <!-- Phone Handset Diagnostic: Local sound and vibration test (No push test here) -->
+        <div class="diagnostics-grid">
+          <div class="diag-card">
+            <div class="diag-icon-box">
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8">
+                <path d="M11 5L6 9H2v6h4l5 4V5z"/>
+                <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/>
+              </svg>
+            </div>
+            <div class="diag-details">
+              <strong>Audio & Haptic Feedback</strong>
+              <small id="alarm-state">Ready for local chime test</small>
+            </div>
+            <button class="btn-action-pill" id="test-alarm" type="button">TEST CHIME</button>
+          </div>
+        </div>
       </div>
 
       <footer class="receiver-footer">
