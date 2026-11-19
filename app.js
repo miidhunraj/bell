@@ -36,24 +36,10 @@ const state = {
   lastRingAt: 0
 };
 
-// Required DOM Element Guard to ensure perfect component wiring
-const requiredIds = [
-  "setup-view", "connect-view", "receiver-view", "kiosk-view",
-  "setup-counter", "setup-phone", "back-setup", "shop-code",
-  "start-scan", "scan-panel", "scan-video", "stop-scan", "join-shop",
-  "connect-result", "phone-topic", "copy-phone-topic", "open-ntfy", "go-receiver",
-  "receiver-status", "receiver-settings", "receiver-topic", "copy-receiver-topic",
-  "tiny-qr", "tiny-qr-box", "test-alarm", "alarm-state", "test-push", "push-state", "stream-label",
-  "kiosk-settings", "guest-button", "thanks-overlay", "thanks-close-btn",
-  "countdown-bar", "countdown-number", "countdown-text",
-  "settings-modal", "close-modal", "shop-qr", "settings-code", "copy-settings-code",
-  "fullscreen-button", "install-app", "settings-test", "reset-device",
-  "alarm-overlay", "stop-alarm", "toast"
-];
-
-const missing = requiredIds.filter(id => !$(id));
-if (missing.length) {
-  console.warn("Call Bell DOM warning — missing IDs:", missing.join(", "));
+// Safe helper to attach click listener if element exists
+function onClick(id, fn) {
+  const el = $(id);
+  if (el) el.addEventListener("click", fn);
 }
 
 /* ==========================================================================
@@ -493,22 +479,41 @@ function openReceiver() {
 }
 
 function openSettings() {
-  $("settings-code").textContent = state.code || "Not generated yet";
+  const codeEl = $("settings-code");
+  if (codeEl) codeEl.textContent = state.code || "Not generated yet";
   updateQRCodes();
-  $("fullscreen-button").querySelector("strong").textContent = document.fullscreenElement
-    ? "Exit Fullscreen Kiosk"
-    : "Toggle Fullscreen Kiosk";
+  
+  const fsBtn = $("fullscreen-button");
+  if (fsBtn) {
+    const fsStrong = fsBtn.querySelector("strong");
+    if (fsStrong) {
+      fsStrong.textContent = document.fullscreenElement
+        ? "Exit Fullscreen Kiosk"
+        : "Toggle Fullscreen Kiosk";
+    }
+  }
   
   // Show "Test Ring to Shopkeeper Phone" ONLY on customer counter tablet!
-  if ($("settings-test")) {
-    $("settings-test").hidden = (state.role !== "counter");
+  const testBtn = $("settings-test");
+  if (testBtn) {
+    testBtn.hidden = (state.role !== "counter");
   }
 
-  $("settings-modal").hidden = false;
+  const modal = $("settings-modal");
+  if (modal) {
+    modal.hidden = false;
+    modal.removeAttribute("hidden");
+    modal.style.display = "grid";
+  }
 }
 
 function closeSettings() {
-  $("settings-modal").hidden = true;
+  const modal = $("settings-modal");
+  if (modal) {
+    modal.hidden = true;
+    modal.setAttribute("hidden", "");
+    modal.style.display = "none";
+  }
 }
 
 async function testPush() {
@@ -738,38 +743,42 @@ function installApp() {
    EVENT LISTENERS & LIFECYCLE
    ========================================================================== */
 function attachEvents() {
-  $("setup-counter").addEventListener("click", enterKiosk);
-  $("setup-phone").addEventListener("click", enterPhoneSetup);
-  $("back-setup").addEventListener("click", () => { stopQrScan(); showScreen("setup"); });
-  $("join-shop").addEventListener("click", joinPhone);
-  $("start-scan").addEventListener("click", startQrScan);
-  $("stop-scan").addEventListener("click", stopQrScan);
-  $("copy-phone-topic").addEventListener("click", () => copyText(topic(), "Topic"));
-  $("open-ntfy").addEventListener("click", openNtfyApp);
-  $("go-receiver").addEventListener("click", openReceiver);
-  $("test-alarm").addEventListener("click", testLocalAlarm);
-  $("test-push").addEventListener("click", testPush);
-  $("copy-receiver-topic").addEventListener("click", () => copyText(topic(), "Topic"));
+  onClick("setup-counter", enterKiosk);
+  onClick("setup-phone", enterPhoneSetup);
+  onClick("back-setup", () => { stopQrScan(); showScreen("setup"); });
+  onClick("join-shop", joinPhone);
+  onClick("start-scan", startQrScan);
+  onClick("stop-scan", stopQrScan);
+  onClick("copy-phone-topic", () => copyText(topic(), "Topic"));
+  onClick("open-ntfy", openNtfyApp);
+  onClick("go-receiver", openReceiver);
+  onClick("test-alarm", testLocalAlarm);
+  onClick("test-push", testPush);
+  onClick("copy-receiver-topic", () => copyText(topic(), "Topic"));
 
   // Customer button & confirmation modal dismiss
-  $("guest-button").addEventListener("click", guestCall);
-  $("thanks-close-btn").addEventListener("click", dismissThanksModal);
+  onClick("guest-button", guestCall);
+  onClick("thanks-close-btn", dismissThanksModal);
 
-  // Settings & Navigation
-  if ($("setup-settings")) $("setup-settings").addEventListener("click", openSettings);
-  if ($("kiosk-settings")) $("kiosk-settings").addEventListener("click", openSettings);
-  if ($("receiver-settings")) $("receiver-settings").addEventListener("click", openSettings);
-  if ($("close-modal")) $("close-modal").addEventListener("click", closeSettings);
-  $("settings-modal").addEventListener("click", e => {
-    if (e.target === $("settings-modal")) closeSettings();
-  });
-  $("copy-settings-code").addEventListener("click", () => copyText(state.code, "Shop code"));
-  $("fullscreen-button").addEventListener("click", toggleFullscreen);
-  $("install-app").addEventListener("click", installApp);
-  $("settings-test").addEventListener("click", testPush);
-  $("reset-device").addEventListener("click", resetDevice);
-  $("stop-alarm").addEventListener("click", stopAlarm);
-  if ($("handset-stop-btn")) $("handset-stop-btn").addEventListener("click", stopAlarm);
+  // Settings & Navigation (Kiosk & Receiver 3-line menus)
+  onClick("kiosk-settings", openSettings);
+  onClick("receiver-settings", openSettings);
+  onClick("close-modal", closeSettings);
+  
+  const modal = $("settings-modal");
+  if (modal) {
+    modal.addEventListener("click", e => {
+      if (e.target === modal) closeSettings();
+    });
+  }
+
+  onClick("copy-settings-code", () => copyText(state.code, "Shop code"));
+  onClick("fullscreen-button", toggleFullscreen);
+  onClick("install-app", installApp);
+  onClick("settings-test", testPush);
+  onClick("reset-device", resetDevice);
+  onClick("stop-alarm", stopAlarm);
+  onClick("handset-stop-btn", stopAlarm);
 
   // Shopkeeper Notice Presets
   document.querySelectorAll(".status-preset-btn").forEach(btn => {
