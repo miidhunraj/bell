@@ -999,32 +999,47 @@ h1 em, h2 em {
   box-shadow: 0 0 0 3px rgba(52, 211, 153, 0.25);
 }
 
-/* Perfectly Centered 3-Line Menu Button */
-.menu-btn {
-  width: 42px;
-  height: 42px;
-  border-radius: var(--radius-sm);
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid var(--c-border-subtle);
+/* High-Visibility 3-Line Menu Buttons */
+.header-actions {
   display: flex;
-  flex-direction: column;
-  justify-content: center;
   align-items: center;
-  gap: 5px;
+  gap: 12px;
+}
+
+.menu-btn, .kiosk-menu-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.08) !important;
+  border: 1.5px solid var(--c-gold-400) !important;
+  display: grid !important;
+  place-items: center !important;
+  color: var(--c-gold-300) !important;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+  cursor: pointer !important;
+  z-index: 20 !important;
+  pointer-events: auto !important;
   transition: all 0.2s var(--ease-smooth);
 }
 
-.menu-btn:hover {
-  background: rgba(255, 255, 255, 0.09);
-  border-color: var(--c-gold-400);
+.menu-btn svg, .kiosk-menu-btn svg {
+  display: block;
+  stroke: var(--c-gold-300);
+  transition: stroke 0.2s;
 }
 
-.menu-bar {
-  width: 18px;
-  height: 2px;
-  background-color: var(--c-ivory);
-  border-radius: 2px;
-  transition: transform 0.2s;
+.menu-btn:hover, .kiosk-menu-btn:hover {
+  background: rgba(212, 181, 121, 0.2) !important;
+  border-color: var(--c-ivory) !important;
+  transform: scale(1.05);
+}
+
+.menu-btn:hover svg, .kiosk-menu-btn:hover svg {
+  stroke: var(--c-ivory);
+}
+
+.menu-btn:active, .kiosk-menu-btn:active {
+  transform: scale(0.95);
 }
 
 .receiver-content {

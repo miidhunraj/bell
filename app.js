@@ -756,9 +756,10 @@ function attachEvents() {
   $("thanks-close-btn").addEventListener("click", dismissThanksModal);
 
   // Settings & Navigation
-  $("kiosk-settings").addEventListener("click", openSettings);
-  $("receiver-settings").addEventListener("click", openSettings);
-  $("close-modal").addEventListener("click", closeSettings);
+  if ($("setup-settings")) $("setup-settings").addEventListener("click", openSettings);
+  if ($("kiosk-settings")) $("kiosk-settings").addEventListener("click", openSettings);
+  if ($("receiver-settings")) $("receiver-settings").addEventListener("click", openSettings);
+  if ($("close-modal")) $("close-modal").addEventListener("click", closeSettings);
   $("settings-modal").addEventListener("click", e => {
     if (e.target === $("settings-modal")) closeSettings();
   });
