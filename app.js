@@ -311,16 +311,25 @@ function connectStream() {
 }
 
 async function sendNtfy(message, isTest = false) {
+  // Use app deep link base URL so tapping the notification directly opens the receiver dashboard with alarm active
+  const baseAppUrl = location.origin + location.pathname + "?role=phone&alarm=1";
+  const stopAppUrl = location.origin + location.pathname + "?role=phone&stop=1";
+
   const query = new URLSearchParams({
-    title: isTest ? "Call Bell Diagnostic Test" : "Call Bell — Guest Assistance",
+    title: isTest ? "Hola Brownie Test Ping" : "Customer at Counter! (Hola Brownie)",
     priority: "urgent",
     tags: "bell,rotating_light",
-    click: location.href
+    click: baseAppUrl,
+    actions: `view, Open & Stop Alarm, ${stopAppUrl}, clear=true`
   });
+
   try {
     const response = await fetch(NTFY + "/" + encodeURIComponent(topic()) + "?" + query, {
       method: "POST",
-      headers: { "Content-Type": "text/plain;charset=UTF-8" },
+      headers: {
+        "Content-Type": "text/plain;charset=UTF-8",
+        "X-Actions": `view, Stop Alarm, ${stopAppUrl}, clear=true`
+      },
       body: message
     });
     return response.ok;
@@ -838,6 +847,17 @@ function attachEvents() {
     loadTodayCount();
     restoreKioskNotice();
 
+    // Check URL parameters for direct deep-link actions from ntfy notification clicks
+    const urlParams = new URLSearchParams(window.location.search);
+    const stopAction = urlParams.get("stop");
+    const alarmAction = urlParams.get("alarm");
+    const roleParam = urlParams.get("role");
+
+    if (roleParam === "phone") {
+      state.role = "phone";
+      save();
+    }
+
     if (state.role === "counter" && state.code) {
       $("settings-code").textContent = state.code;
       updateQRCodes();
@@ -849,6 +869,19 @@ function attachEvents() {
       updateQRCodes();
       showScreen("receiver");
       connectStream();
+
+      // If user tapped "Stop Alarm" directly from ntfy notification action
+      if (stopAction === "1") {
+        setTimeout(() => stopAlarm(), 100);
+        // Clean URL parameter without reloading
+        window.history.replaceState({}, document.title, window.location.pathname);
+      } else if (alarmAction === "1") {
+        // Opened from ntfy banner click — immediately trigger in-page alarm & stop bar
+        setTimeout(() => {
+          startAlarm("Customer is waiting at the counter right now!");
+        }, 150);
+        window.history.replaceState({}, document.title, window.location.pathname);
+      }
     } else {
       showScreen("setup");
     }
