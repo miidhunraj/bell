@@ -216,14 +216,22 @@ function startAlarm(message) {
     $("active-alarm-bar").hidden = false;
     $("alarm-bar-text").textContent = message || "Customer calling!";
   }
+
+  // Continuous sound and continuous vibration loops until user presses STOP
   playChime();
-  vibrate([800, 250, 800, 250, 1000]);
+  vibrate([900, 200, 900, 200, 900, 200, 1000]);
+
+  // Audio loop every 2.2s
   state.alarmTimer = setInterval(() => {
     if (state.alarmActive) playChime();
-  }, 2400);
+  }, 2200);
+
+  // Continuous non-stop vibration pulse loop every 1.5s
   state.vibrationTimer = setInterval(() => {
-    if (state.alarmActive) vibrate([800, 250, 800, 250, 1000]);
-  }, 3000);
+    if (state.alarmActive) {
+      vibrate([1000, 150, 1000, 150, 1000]);
+    }
+  }, 1500);
 
   if ("Notification" in window && Notification.permission === "granted") {
     try {
@@ -267,7 +275,15 @@ function connectStream() {
       const data = JSON.parse(event.data);
       if (data.event !== "message" || (data.id && data.id === state.lastMessage)) return;
       state.lastMessage = data.id || String(Date.now());
-      startAlarm(data.message || "Someone is waiting for you.");
+
+      // Check if message is a dynamic notice update from shopkeeper
+      if (data.message && data.message.startsWith("NOTICE:")) {
+        const notice = data.message.replace(/^NOTICE:/, "").trim();
+        updateKioskNotice(notice);
+        return;
+      }
+
+      startAlarm(data.message || "Customer is waiting at the counter.");
       $("push-state").textContent = "Incoming call alert received";
     } catch (err) {
       console.warn("Could not parse incoming SSE message", err);
@@ -323,6 +339,42 @@ function updateQRCodes() {
   
   if ($("shop-qr")) $("shop-qr").src = qrUrl;
   if ($("tiny-qr")) $("tiny-qr").src = tinyUrl;
+}
+
+function updateKioskNotice(notice) {
+  const banner = $("kiosk-live-notice");
+  const text = $("kiosk-notice-text");
+  if (!banner || !text) return;
+  if (notice && notice.trim()) {
+    text.textContent = notice.trim();
+    banner.hidden = false;
+  } else {
+    banner.hidden = true;
+    text.textContent = "";
+  }
+}
+
+function incrementTodayCount() {
+  const today = new Date().toDateString();
+  const stored = JSON.parse(localStorage.getItem("cb_calls_today") || "{}");
+  const count = (stored.date === today ? stored.count : 0) + 1;
+  localStorage.setItem("cb_calls_today", JSON.stringify({ date: today, count }));
+  if ($("kiosk-today-count")) $("kiosk-today-count").textContent = count;
+}
+
+function loadTodayCount() {
+  const today = new Date().toDateString();
+  const stored = JSON.parse(localStorage.getItem("cb_calls_today") || "{}");
+  const count = (stored.date === today ? stored.count : 0);
+  if ($("kiosk-today-count")) $("kiosk-today-count").textContent = count;
+}
+
+async function broadcastNotice(msg) {
+  if (!state.code) return;
+  const text = msg ? msg.trim() : "";
+  const payload = "NOTICE:" + text;
+  toast(text ? "Posted notice to tablet" : "Cleared tablet notice");
+  await sendNtfy(payload, false);
 }
 
 async function requestWakeLock() {
@@ -403,6 +455,12 @@ function openSettings() {
   $("fullscreen-button").querySelector("strong").textContent = document.fullscreenElement
     ? "Exit Fullscreen Kiosk"
     : "Toggle Fullscreen Kiosk";
+  
+  // Hide "Send Test Alert" on customer tablet device; only show to main shop device
+  if ($("settings-test")) {
+    $("settings-test").hidden = (state.role === "counter");
+  }
+
   $("settings-modal").hidden = false;
 }
 
@@ -475,6 +533,7 @@ async function guestCall() {
     return;
   }
 
+  incrementTodayCount();
   if (title) title.textContent = "CALL SENT";
   
   // 4. Show confirmation modal & 5. Start 30s cooldown
@@ -668,6 +727,24 @@ function attachEvents() {
   $("stop-alarm").addEventListener("click", stopAlarm);
   if ($("handset-stop-btn")) $("handset-stop-btn").addEventListener("click", stopAlarm);
 
+  // Shopkeeper Notice Presets
+  document.querySelectorAll(".status-preset-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll(".status-preset-btn").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      const notice = btn.getAttribute("data-notice") || "";
+      if ($("custom-notice-input")) $("custom-notice-input").value = notice;
+      broadcastNotice(notice);
+    });
+  });
+
+  if ($("broadcast-notice-btn")) {
+    $("broadcast-notice-btn").addEventListener("click", () => {
+      const val = $("custom-notice-input") ? $("custom-notice-input").value : "";
+      broadcastNotice(val);
+    });
+  }
+
   // Tiny QR preview trigger
   $("tiny-qr-box").addEventListener("click", openSettings);
 
@@ -705,11 +782,13 @@ function attachEvents() {
   const init = () => {
     attachEvents();
     load();
+    loadTodayCount();
 
     if (state.role === "counter" && state.code) {
       $("settings-code").textContent = state.code;
       updateQRCodes();
       showScreen("kiosk");
+      connectStream(); // Listen for live notices broadcast from shopkeeper phone!
     } else if (state.role === "phone" && state.code) {
       $("shop-code").value = state.code;
       $("receiver-topic").textContent = topic();

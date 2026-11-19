@@ -321,6 +321,21 @@
           </div>
         </div>
 
+        <!-- Quick Status Presets for Shopkeeper -->
+        <div class="shop-status-card">
+          <div class="card-eyebrow">QUICK COUNTER NOTICE (DISPLAYED ON TABLET)</div>
+          <div class="status-preset-row">
+            <button class="status-preset-btn active" data-notice="" type="button">Default (Normal)</button>
+            <button class="status-preset-btn" data-notice="Be right back in 5 mins! ⏱️" type="button">5 Min Break</button>
+            <button class="status-preset-btn" data-notice="Preparing fresh brownies in back! 🍫" type="button">In Kitchen</button>
+            <button class="status-preset-btn" data-notice="Restocking inventory nearby! 📦" type="button">Restocking</button>
+          </div>
+          <div class="custom-notice-row">
+            <input id="custom-notice-input" type="text" placeholder="Or type custom counter message..." maxlength="45">
+            <button id="broadcast-notice-btn" type="button">POST TO TABLET</button>
+          </div>
+        </div>
+
         <div class="diagnostics-grid">
           <div class="diag-card">
             <div class="diag-icon-box">
@@ -388,6 +403,11 @@
       <main class="kiosk-stage">
         <div class="kiosk-prompt">
           <div class="kiosk-badge">HOLA BROWNIE · COUNTER CALL</div>
+          <!-- Dynamic Notice Banner when shopkeeper sets a message -->
+          <div class="kiosk-live-notice" id="kiosk-live-notice" hidden>
+            <span class="notice-icon">📢</span>
+            <span id="kiosk-notice-text"></span>
+          </div>
           <h1 class="kiosk-headline">If I'm not here,<br><em>just tap.</em></h1>
           <p class="kiosk-subhead">I will be right there with you.</p>
         </div>
@@ -419,6 +439,9 @@
         <div class="kiosk-presence">
           <span class="presence-dot"></span>
           <span>STAFF ON SITE · I WILL BE RIGHT THERE</span>
+        </div>
+        <div class="kiosk-stats">
+          <span>Calls Today: <strong id="kiosk-today-count">0</strong></span>
         </div>
         <div class="kiosk-credits">
           <span>Made by <a class="creator-link" href="https://www.instagram.com/miidhunee/" target="_blank" rel="noopener noreferrer">miidhuneey!!</a></span>
@@ -517,11 +540,12 @@
             <span class="action-arrow">→</span>
           </button>
 
+          <!-- Test notification only shown on main shop device (receiver/setup), hidden on client counter -->
           <button class="drawer-action-btn" id="settings-test" type="button">
             <div class="action-icon">⌁</div>
             <div class="action-desc">
               <strong>Send Test Alert</strong>
-              <small>Verify ntfy receiver delivery right now</small>
+              <small>Verify phone receiver delivery right now</small>
             </div>
             <span class="action-arrow">→</span>
           </button>
