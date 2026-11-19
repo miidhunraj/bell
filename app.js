@@ -204,7 +204,26 @@ function stopAlarm() {
   vibrate(0);
   if ($("alarm-overlay")) $("alarm-overlay").hidden = true;
   if ($("active-alarm-bar")) $("active-alarm-bar").hidden = true;
+
+  // Broadcast cancelation to ntfy and clear all persistent notifications
+  sendCancelNtfy();
   toast("Alarm stopped");
+}
+
+async function sendCancelNtfy() {
+  if (!state.code) return;
+  const query = new URLSearchParams({
+    title: "Call Bell — Handled",
+    priority: "min",
+    tags: "white_check_mark"
+  });
+  try {
+    await fetch(NTFY + "/" + encodeURIComponent(topic()) + "?" + query, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain;charset=UTF-8" },
+      body: "STOPPED: Shopkeeper has acknowledged the counter."
+    });
+  } catch {}
 }
 
 function startAlarm(message) {
@@ -276,6 +295,20 @@ function connectStream() {
       if (data.event !== "message" || (data.id && data.id === state.lastMessage)) return;
       state.lastMessage = data.id || String(Date.now());
 
+      // Check if message is a STOP or cancel command
+      if (data.message && data.message.startsWith("STOPPED:")) {
+        if (state.alarmActive) {
+          state.alarmActive = false;
+          clearInterval(state.alarmTimer);
+          clearInterval(state.vibrationTimer);
+          state.alarmTimer = state.vibrationTimer = null;
+          vibrate(0);
+          if ($("alarm-overlay")) $("alarm-overlay").hidden = true;
+          if ($("active-alarm-bar")) $("active-alarm-bar").hidden = true;
+        }
+        return;
+      }
+
       // Check if message is a dynamic notice update from shopkeeper
       if (data.message && data.message.startsWith("NOTICE:")) {
         const notice = data.message.replace(/^NOTICE:/, "").trim();
@@ -345,12 +378,22 @@ function updateKioskNotice(notice) {
   const banner = $("kiosk-live-notice");
   const text = $("kiosk-notice-text");
   if (!banner || !text) return;
-  if (notice && notice.trim()) {
-    text.textContent = notice.trim();
+  const cleanNotice = notice ? String(notice).trim() : "";
+  if (cleanNotice && cleanNotice !== "CLEAR") {
+    text.textContent = cleanNotice;
     banner.hidden = false;
+    localStorage.setItem("cb_kiosk_notice", cleanNotice);
   } else {
     banner.hidden = true;
     text.textContent = "";
+    localStorage.removeItem("cb_kiosk_notice");
+  }
+}
+
+function restoreKioskNotice() {
+  const saved = localStorage.getItem("cb_kiosk_notice");
+  if (saved) {
+    updateKioskNotice(saved);
   }
 }
 
@@ -371,9 +414,9 @@ function loadTodayCount() {
 
 async function broadcastNotice(msg) {
   if (!state.code) return;
-  const text = msg ? msg.trim() : "";
+  const text = msg ? msg.trim() : "CLEAR";
   const payload = "NOTICE:" + text;
-  toast(text ? "Posted notice to tablet" : "Cleared tablet notice");
+  toast(text && text !== "CLEAR" ? "Posted notice to tablet" : "Cleared tablet notice");
   await sendNtfy(payload, false);
 }
 
@@ -456,9 +499,9 @@ function openSettings() {
     ? "Exit Fullscreen Kiosk"
     : "Toggle Fullscreen Kiosk";
   
-  // Hide "Send Test Alert" on customer tablet device; only show to main shop device
+  // Show "Test Ring to Shopkeeper Phone" ONLY on customer counter tablet!
   if ($("settings-test")) {
-    $("settings-test").hidden = (state.role === "counter");
+    $("settings-test").hidden = (state.role !== "counter");
   }
 
   $("settings-modal").hidden = false;
@@ -783,6 +826,7 @@ function attachEvents() {
     attachEvents();
     load();
     loadTodayCount();
+    restoreKioskNotice();
 
     if (state.role === "counter" && state.code) {
       $("settings-code").textContent = state.code;

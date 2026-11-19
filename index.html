@@ -325,7 +325,7 @@
         <div class="shop-status-card">
           <div class="card-eyebrow">QUICK COUNTER NOTICE (DISPLAYED ON TABLET)</div>
           <div class="status-preset-row">
-            <button class="status-preset-btn active" data-notice="" type="button">Default (Normal)</button>
+            <button class="status-preset-btn active" data-notice="" type="button">Normal (Clear)</button>
             <button class="status-preset-btn" data-notice="Be right back in 5 mins! ⏱️" type="button">5 Min Break</button>
             <button class="status-preset-btn" data-notice="Preparing fresh brownies in back! 🍫" type="button">In Kitchen</button>
             <button class="status-preset-btn" data-notice="Restocking inventory nearby! 📦" type="button">Restocking</button>
@@ -333,35 +333,6 @@
           <div class="custom-notice-row">
             <input id="custom-notice-input" type="text" placeholder="Or type custom counter message..." maxlength="45">
             <button id="broadcast-notice-btn" type="button">POST TO TABLET</button>
-          </div>
-        </div>
-
-        <div class="diagnostics-grid">
-          <div class="diag-card">
-            <div class="diag-icon-box">
-              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8">
-                <path d="M11 5L6 9H2v6h4l5 4V5z"/>
-                <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/>
-              </svg>
-            </div>
-            <div class="diag-details">
-              <strong>Audio & Haptic Feedback</strong>
-              <small id="alarm-state">Ready for local chime test</small>
-            </div>
-            <button class="btn-action-pill" id="test-alarm" type="button">TEST CHIME</button>
-          </div>
-
-          <div class="diag-card">
-            <div class="diag-icon-box">
-              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8">
-                <path d="M22 17H2a3 3 0 0 0 3-3V9a7 7 0 0 1 14 0v5a3 3 0 0 0 3 3zm-8.27 4a2 2 0 0 1-3.46 0"/>
-              </svg>
-            </div>
-            <div class="diag-details">
-              <strong>Remote Push Pipeline</strong>
-              <small id="push-state">Verify end-to-end delivery</small>
-            </div>
-            <button class="btn-action-pill" id="test-push" type="button">SEND PING</button>
           </div>
         </div>
       </div>
@@ -531,21 +502,12 @@
             <span class="action-arrow">→</span>
           </button>
 
-          <button class="drawer-action-btn" id="install-app" type="button">
-            <div class="action-icon">↓</div>
-            <div class="action-desc">
-              <strong>Install Application</strong>
-              <small>Add Call Bell to Home Screen or Desktop</small>
-            </div>
-            <span class="action-arrow">→</span>
-          </button>
-
-          <!-- Test notification only shown on main shop device (receiver/setup), hidden on client counter -->
+          <!-- Test notification exclusively on counter tablet to test ping shopkeeper handset -->
           <button class="drawer-action-btn" id="settings-test" type="button">
             <div class="action-icon">⌁</div>
             <div class="action-desc">
-              <strong>Send Test Alert</strong>
-              <small>Verify phone receiver delivery right now</small>
+              <strong>Test Ring to Shopkeeper Phone</strong>
+              <small>Send test alert to verify phone receives rings</small>
             </div>
             <span class="action-arrow">→</span>
           </button>
